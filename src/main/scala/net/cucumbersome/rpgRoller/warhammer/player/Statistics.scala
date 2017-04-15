@@ -1,6 +1,7 @@
-package net.cucumbersome.rpgRoller.warhammer
-import Player._
-case class Player(
+package net.cucumbersome.rpgRoller.warhammer.player
+
+import net.cucumbersome.rpgRoller.warhammer.player.Statistics._
+final case class Statistics(
                    weaponSkill: WeaponSkill,
                    balisticSkill: BalisticSkill,
                    strength: Strength,
@@ -12,8 +13,7 @@ case class Player(
                    fellowship: Fellowship,
                    influence: Influence
                  )
-object Player {
-
+object Statistics {
   class WeaponSkill(val data: Int) extends AnyVal {
     override def toString: String = data.toString
   }
@@ -54,4 +54,7 @@ object Player {
     override def toString: String = data.toString
   }
 
+  class RemainingHealth(val data: Int) extends AnyVal{
+    override def toString: String = data.toString
+  }
 }
