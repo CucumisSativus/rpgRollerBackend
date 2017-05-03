@@ -16,18 +16,24 @@ class CombatHandler(id: String) extends PersistentActor with ActorLogging{
 
   override def receiveCommand: Receive = {
     case InitCombat(actors) => persist(CombatInitialized(actors))(handleEvent)
+    case AddActors(actors) => persist(ActorsAdded(actors))(handleEvent)
     case GetCombat() => sender ! GetCombatResponse(state)
   }
 
   private def handleEvent(evt: CombatEvent): Unit = evt match {
-    case CombatInitialized(actors) => {
+    case CombatInitialized(actors) =>
       val combat = Combat.empty
       val manip = for{
         _ <- Combat.addActor(actors)
       } yield Unit
       val (newState, _) = manip.run(combat).value
       state = newState
-    }
+    case ActorsAdded(actors) =>
+      val manip = for{
+        _ <- Combat.addActor(actors)
+      } yield Unit
+      val (newState, _) = manip.run(state).value
+      state = newState
   }
 }
 
@@ -35,8 +41,13 @@ object CombatHandler{
   def props(id: String): Props = Props(new CombatHandler(id))
   sealed trait CombatEvent
   case class CombatInitialized(actors: List[CombatActor]) extends CombatEvent
+  case class ActorsAdded(actors: List[CombatActor]) extends CombatEvent
 
   case class InitCombat(actors: List[CombatActor])
+
   case class GetCombat()
   case class GetCombatResponse(combat: Combat)
+
+  case class AddActors(actors: List[CombatActor])
+
 }

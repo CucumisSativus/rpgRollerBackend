@@ -4,7 +4,7 @@ import java.util.UUID
 
 import akka.actor.{ActorRef, ActorSystem}
 import akka.testkit.{TestKit, TestProbe}
-import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler.{GetCombat, GetCombatResponse, InitCombat}
+import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler.{AddActors, GetCombat, GetCombatResponse, InitCombat}
 import net.cucumbersome.test.DefaultTimeouts
 import org.scalatest.{MustMatchers, WordSpecLike}
 import akka.pattern.ask
@@ -16,7 +16,7 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
   import net.cucumbersome.test.CombatActorGenerator.arbitraryCombatActor
 
   "A combat handler" when {
-    "Asking for state" should {
+    "asking for state" should {
       "return the state" in {
         val sender = TestProbe()
         val worker = buildWorker
@@ -30,7 +30,7 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
       }
     }
 
-    "Initializing the combat" should {
+    "initializing the combat" should {
       "initialize with empty combat" in {
         val sender = TestProbe()
         val worker = buildWorker
@@ -56,6 +56,28 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
         val combat = sender.expectMsgPF(defaultTimeout){
           case GetCombatResponse(cmb) => cmb
         }
+
+        combat mustBe expectedCombat
+      }
+    }
+
+    "addning new combat actors" should {
+      "add them properly" in {
+        val sender = TestProbe()
+        val worker = buildWorker
+
+        val (initialActor, newActor) = random[CombatActor](2) match {
+          case f :: s :: Nil => (f, s)
+        }
+
+        sender.send(worker, InitCombat(List(initialActor)))
+        sender.send(worker, AddActors(List(newActor)))
+        sender.send(worker, GetCombat())
+        val combat = sender.expectMsgPF(defaultTimeout){
+          case GetCombatResponse(cmb) => cmb
+        }
+
+        val expectedCombat = Combat(List(initialActor, newActor))
 
         combat mustBe expectedCombat
       }
