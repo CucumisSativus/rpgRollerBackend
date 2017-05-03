@@ -28,4 +28,7 @@ object Combat{
         playersToBeRemoved
       )
   }
+
+  def empty: Combat = Combat(List())
 }
+
