@@ -5,7 +5,7 @@ import net.cucumbersome.UnitSpec
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActorOptics.modifyAgility
 import net.cucumbersome.rpgRoller.warhammer.player.Statistics.Agility
-class InitiativeHandlerSpec extends UnitSpec with RandomDataGenerator{
+class InitiativeSpec extends UnitSpec with RandomDataGenerator{
   import net.cucumbersome.test.CombatActorGenerator.arbitraryCombatActor
   "An initiative handler" should {
     val firstPlayer = modifyAgility.modify(_ => new Agility(11))(random[CombatActor])
@@ -18,7 +18,7 @@ class InitiativeHandlerSpec extends UnitSpec with RandomDataGenerator{
       firstPlayer
     )
 
-    val sort = InitiativeHandler.generateInitiativeAndSort(() => 0) _
+    val sort = Initiative.generateInitiativeAndSort(() => 0) _
     "sort by initiative" in {
       val expectedPlayers = List(
         firstPlayer,

@@ -1,7 +1,7 @@
 package net.cucumbersome.rpgRoller.warhammer.combat
 
 import cats.data._
-import net.cucumbersome.rpgRoller.warhammer.combat.initiative.InitiativeHandler
+import net.cucumbersome.rpgRoller.warhammer.combat.initiative.Initiative
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
 
 case class Combat(players: List[CombatActor])
@@ -12,7 +12,7 @@ object Combat{
   }
 
   def sortByInitiative(roll: () => Int): State[Combat, Unit] =  State[Combat, Unit] {
-    case Combat(players) => (Combat(InitiativeHandler.generateInitiativeAndSort(roll)(players)), Unit)
+    case Combat(players) => (Combat(Initiative.generateInitiativeAndSort(roll)(players)), Unit)
   }
 
   def removeActors(actors: List[CombatActor]) : State[Combat, List[CombatActor]] = State[Combat, List[CombatActor]] {
