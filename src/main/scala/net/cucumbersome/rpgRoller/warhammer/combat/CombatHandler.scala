@@ -22,17 +22,10 @@ class CombatHandler(id: String) extends PersistentActor with ActorLogging{
 
   private def handleEvent(evt: CombatEvent): Unit = evt match {
     case CombatInitialized(actors) =>
-      val combat = Combat.empty
-      val manip = for{
-        _ <- Combat.addActor(actors)
-      } yield Unit
-      val (newState, _) = manip.run(combat).value
+      val (newState, _) = Combat.addActor(actors).run(Combat.empty).value
       state = newState
     case ActorsAdded(actors) =>
-      val manip = for{
-        _ <- Combat.addActor(actors)
-      } yield Unit
-      val (newState, _) = manip.run(state).value
+      val (newState, _) = Combat.addActor(actors).run(state).value
       state = newState
   }
 }
