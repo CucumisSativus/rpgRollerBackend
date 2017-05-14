@@ -3,7 +3,7 @@ package net.cucumbersome.rpgRoller.warhammer.combat.initiative
 import net.cucumbersome.rpgRoller.warhammer.player.{CombatActor, Statistics}
 
 
-object InitiativeHandler {
+object Initiative {
   def generateInitiativeAndSort(random: () => Int)(players: List[CombatActor]): List[CombatActor] ={
     val generate = generateIniiative(random) _
     players.map(generate).sortBy(_._2).reverse.map(_._1)
