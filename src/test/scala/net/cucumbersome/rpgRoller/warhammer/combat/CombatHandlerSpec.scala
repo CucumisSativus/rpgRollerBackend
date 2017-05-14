@@ -4,7 +4,7 @@ import java.util.UUID
 
 import akka.actor.{ActorRef, ActorSystem}
 import akka.testkit.{TestKit, TestProbe}
-import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler.{AddActors, GetCombat, GetCombatResponse, InitCombat}
+import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler._
 import net.cucumbersome.test.DefaultTimeouts
 import org.scalatest.{MustMatchers, WordSpecLike}
 import akka.pattern.ask
@@ -78,6 +78,28 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
         }
 
         val expectedCombat = Combat(List(initialActor, newActor))
+
+        combat mustBe expectedCombat
+      }
+    }
+
+    "removing actors" should {
+      "remove actors " in {
+        val sender = TestProbe()
+        val worker = buildWorker
+
+        val (firstActor, secondActor) = random[CombatActor](2) match {
+          case f :: s :: Nil => (f, s)
+        }
+
+        sender.send(worker, InitCombat(List(firstActor, secondActor)))
+        sender.send(worker, RemoveActors(List(secondActor)))
+        sender.send(worker, GetCombat())
+        val combat = sender.expectMsgPF(defaultTimeout){
+          case GetCombatResponse(cmb) => cmb
+        }
+
+        val expectedCombat = Combat(List(firstActor))
 
         combat mustBe expectedCombat
       }

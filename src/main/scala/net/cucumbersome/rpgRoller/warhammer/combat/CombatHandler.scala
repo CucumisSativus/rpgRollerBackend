@@ -11,12 +11,13 @@ class CombatHandler(id: String) extends PersistentActor with ActorLogging{
 
   override def receiveRecover: Receive = {
     case evt: CombatEvent => handleEvent(evt)
-    case RecoveryCompleted => log.info("Recovery completed!")
+    case RecoveryCompleted => log.debug("Recovery completed!")
   }
 
   override def receiveCommand: Receive = {
     case InitCombat(actors) => persist(CombatInitialized(actors))(handleEvent)
     case AddActors(actors) => persist(ActorsAdded(actors))(handleEvent)
+    case RemoveActors(actors) => persist(ActorsRemoved(actors))(handleEvent)
     case GetCombat() => sender ! GetCombatResponse(state)
   }
 
@@ -27,6 +28,9 @@ class CombatHandler(id: String) extends PersistentActor with ActorLogging{
     case ActorsAdded(actors) =>
       val (newState, _) = Combat.addActor(actors).run(state).value
       state = newState
+    case ActorsRemoved(actorsToBeRemoved) =>
+      val (newState, _) = Combat.removeActors(actorsToBeRemoved).run(state).value
+      state = newState
   }
 }
 
@@ -35,6 +39,7 @@ object CombatHandler{
   sealed trait CombatEvent
   case class CombatInitialized(actors: List[CombatActor]) extends CombatEvent
   case class ActorsAdded(actors: List[CombatActor]) extends CombatEvent
+  case class ActorsRemoved(actors: List[CombatActor]) extends CombatEvent
 
   case class InitCombat(actors: List[CombatActor])
 
@@ -43,4 +48,5 @@ object CombatHandler{
 
   case class AddActors(actors: List[CombatActor])
 
+  case class RemoveActors(actors: List[CombatActor])
 }
