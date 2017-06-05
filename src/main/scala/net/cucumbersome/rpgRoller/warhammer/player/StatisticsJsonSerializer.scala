@@ -16,10 +16,10 @@ trait StatisticsJsonSerializer extends DefaultJsonProtocol{
       json.asJsObject.getFields(jsonFields:_*) match {
         case Seq(JsNumber(ws), JsNumber(bs), JsNumber(s), JsNumber(t), JsNumber(ag), JsNumber(int), JsNumber(per), JsNumber(wp), JsNumber(fel), JsNumber(inf)) =>
           Statistics(
-            new player.Statistics.WeaponSkill(ws.toInt),
-            new warhammer.player.Statistics.BalisticSkill(bs.toInt),
-            new rpgRoller.warhammer.player.Statistics.Strength(s.toInt),
-            new cucumbersome.rpgRoller.warhammer.player.Statistics.Toughness(t.toInt),
+            new Statistics.WeaponSkill(ws.toInt),
+            new Statistics.BalisticSkill(bs.toInt),
+            new Statistics.Strength(s.toInt),
+            new Statistics.Toughness(t.toInt),
             new Statistics.Agility(ag.toInt),
             new Statistics.Intelligence(int.toInt),
             new Statistics.Perception(per.toInt),
@@ -45,17 +45,3 @@ trait StatisticsJsonSerializer extends DefaultJsonProtocol{
     )
   }
 }
-
-
-/*
-  implicit object ColorJsonFormat extends RootJsonFormat[Color] {
-    def write(c: Color) =
-      JsArray(JsString(c.name), JsNumber(c.red), JsNumber(c.green), JsNumber(c.blue))
-
-    def read(value: JsValue) = value match {
-      case JsArray(Vector(JsString(name), JsNumber(red), JsNumber(green), JsNumber(blue))) =>
-        new Color(name, red.toInt, green.toInt, blue.toInt)
-      case _ => deserializationError("Color expected")
-    }
-  }
- */
