@@ -1,4 +1,6 @@
 import akka.actor.ActorSystem
+import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import net.cucumbersome.rpgRoller.warhammer.player.{ActorsController, CombatActor, InMemoryActorRepository, Statistics}
@@ -12,7 +14,11 @@ object Main {
     val repo = new InMemoryActorRepository(initialCombatActors)
     val controller = new ActorsController(repo)
 
-    Http().bindAndHandle(controller.route, "localhost", 8080)
+    val conf = ConfigFactory.load
+    val port = conf.getInt("port")
+    val domain = conf.getString("domain")
+
+    Http().bindAndHandle(controller.route, domain, port)
 
   }
 
