@@ -3,7 +3,7 @@ package net.cucumbersome.rpgRoller.warhammer.player
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator
 import net.cucumbersome.UnitSpec
 import spray.json._
-
+import net.cucumbersome.rpgRoller.warhammer.player.StatisticsConversions._
 class StatisticsJsonSerializerSpec extends UnitSpec with StatisticsJsonSerializer with RandomDataGenerator{
   "Statistics json serializer" should {
     "serialize to json" in {
@@ -45,7 +45,18 @@ class StatisticsJsonSerializerSpec extends UnitSpec with StatisticsJsonSerialize
            | }
          """.stripMargin
 
-      val expectedStats = Statistics.buildUnsafe(1, 2, 3, 4, 5, 6, 7, 8 , 9, 10)
+      val expectedStats = Statistics(
+        1.toWs,
+        2.toBs,
+        3.toStr,
+        4.toTg,
+        5.toAg,
+        6.toIt,
+        7.toPer,
+        8.toWp,
+        9.toFel,
+        10.toInfl
+      )
 
       expectedJson.parseJson.convertTo[Statistics] mustBe expectedStats
     }

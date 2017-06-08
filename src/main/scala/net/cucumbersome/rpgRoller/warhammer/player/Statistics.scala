@@ -14,20 +14,6 @@ final case class Statistics(
                    influence: Influence
                  )
 object Statistics {
-  def buildUnsafe(ws: Int, bs: Int, str: Int, tg: Int, ag: Int, int: Int, per: Int, wp: Int, fel: Int, infl: Int): Statistics = {
-    Statistics(
-      new WeaponSkill(ws),
-      new BalisticSkill(bs),
-      new Strength(str),
-      new Toughness(tg),
-      new Agility(ag),
-      new Intelligence(int),
-      new Perception(per),
-      new WillPower(wp),
-      new Fellowship(fel),
-      new Influence(infl)
-    )
-  }
   class WeaponSkill(val data: Int) extends AnyVal {
     override def toString: String = data.toString
   }
