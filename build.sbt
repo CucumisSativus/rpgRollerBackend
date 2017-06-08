@@ -25,6 +25,7 @@ libraryDependencies ++= Seq(
   "com.github.julien-truffaut" %%  "monocle-law"   % monocleVersion % "test",
   "org.typelevel" %% "cats" % "0.9.0",
   "org.scalatest" %% "scalatest" % "3.0.1" % "test",
-  "com.danielasfregola" %% "random-data-generator" % "2.0"
+  "com.danielasfregola" %% "random-data-generator" % "2.0",
+  "com.typesafe" % "config" % "1.3.1"
 )
         
