@@ -3,7 +3,7 @@ import net.cucumbersome.rpgRoller.warhammer.player.Statistics._
 object StatisticsConversions {
   implicit class intToStatisticsConversions(x: Int){
     def toWs: WeaponSkill = new WeaponSkill(x)
-    def toBs: BalisticSkill = new BalisticSkill(x)
+    def toBs: BallisticSkill = new BallisticSkill(x)
     def toStr: Strength = new Strength(x)
     def toTg: Toughness = new Toughness(x)
     def toAg: Agility = new Agility(x)

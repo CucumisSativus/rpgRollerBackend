@@ -3,7 +3,7 @@ package net.cucumbersome.rpgRoller.warhammer.player
 import net.cucumbersome.rpgRoller.warhammer.player.Statistics._
 final case class Statistics(
                    weaponSkill: WeaponSkill,
-                   balisticSkill: BalisticSkill,
+                   ballisticSkill: BallisticSkill,
                    strength: Strength,
                    toughness: Toughness,
                    agility: Agility,
@@ -18,7 +18,7 @@ object Statistics {
     override def toString: String = data.toString
   }
 
-  class BalisticSkill(val data: Int) extends AnyVal {
+  class BallisticSkill(val data: Int) extends AnyVal {
     override def toString: String = data.toString
   }
 
