@@ -18,7 +18,7 @@ object StatisticsGenerator {
       inf <- Gen.choose(0, 100)
     } yield Statistics(
       new Statistics.WeaponSkill(ws),
-      new Statistics.BalisticSkill(bs),
+      new Statistics.BallisticSkill(bs),
       new Statistics.Strength(s),
       new Statistics.Toughness(t),
       new Statistics.Agility(ag),
