@@ -7,6 +7,9 @@ scalaVersion := "2.12.1"
 val akkaVersion = "2.5.0"
 val akkaHttpVersion = "10.0.5"
 val monocleVersion = "1.4.0"
+resolvers += Resolver.sonatypeRepo("releases")
+
+addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,

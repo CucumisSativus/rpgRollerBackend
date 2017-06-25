@@ -4,10 +4,10 @@ import akka.actor.{ActorLogging, Props}
 import akka.persistence.{PersistentActor, RecoveryCompleted}
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
 
-class CombatHandler(id: String) extends PersistentActor with ActorLogging{
+class CombatHandler(actorId: String) extends PersistentActor with ActorLogging{
   import CombatHandler._
-  override def persistenceId: String = id
-  private var state: Combat = Combat.empty
+  override def persistenceId: String = actorId
+  private var state: Map[String, Combat] = Map()
 
   override def receiveRecover: Receive = {
     case evt: CombatEvent => handleEvent(evt)
@@ -15,38 +15,43 @@ class CombatHandler(id: String) extends PersistentActor with ActorLogging{
   }
 
   override def receiveCommand: Receive = {
-    case InitCombat(actors) => persist(CombatInitialized(actors))(handleEvent)
-    case AddActors(actors) => persist(ActorsAdded(actors))(handleEvent)
-    case RemoveActors(actors) => persist(ActorsRemoved(actors))(handleEvent)
-    case GetCombat() => sender ! GetCombatResponse(state)
+    case InitCombat(id, actors) => persist(CombatInitialized(id, actors))(handleEvent)
+    case AddActors(id, actors) => persist(ActorsAdded(id, actors))(handleEvent)
+    case RemoveActors(id, actors) => persist(ActorsRemoved(id, actors))(handleEvent)
+    case GetCombat(id) => sender ! GetCombatResponse(id, getCombat(id))
   }
 
   private def handleEvent(evt: CombatEvent): Unit = evt match {
-    case CombatInitialized(actors) =>
+    case CombatInitialized(id, actors) =>
       val (newState, _) = Combat.addActor(actors).run(Combat.empty).value
-      state = newState
-    case ActorsAdded(actors) =>
-      val (newState, _) = Combat.addActor(actors).run(state).value
-      state = newState
-    case ActorsRemoved(actorsToBeRemoved) =>
-      val (newState, _) = Combat.removeActors(actorsToBeRemoved).run(state).value
-      state = newState
+      state = state + (id -> newState)
+    case ActorsAdded(id, actors) =>
+      val (newState, _) = Combat.addActor(actors).run(getCombat(id)).value
+      state = state + (id -> newState)
+    case ActorsRemoved(id, actorsToBeRemoved) =>
+      val (newState, _) = Combat.removeActors(actorsToBeRemoved).run(getCombat(id)).value
+      state = state + (id -> newState)
+  }
+
+  private def getCombat(id: String): Combat = {
+    state.getOrElse(id, Combat.empty)
   }
 }
 
 object CombatHandler{
-  def props(id: String): Props = Props(new CombatHandler(id))
+  def props(actorId: String): Props = Props(new CombatHandler(actorId))
+
   sealed trait CombatEvent
-  case class CombatInitialized(actors: List[CombatActor]) extends CombatEvent
-  case class ActorsAdded(actors: List[CombatActor]) extends CombatEvent
-  case class ActorsRemoved(actors: List[CombatActor]) extends CombatEvent
+  case class CombatInitialized(id: String, actors: List[CombatActor]) extends CombatEvent
+  case class ActorsAdded(id: String, actors: List[CombatActor]) extends CombatEvent
+  case class ActorsRemoved(id: String, actors: List[CombatActor]) extends CombatEvent
 
-  case class InitCombat(actors: List[CombatActor])
+  case class InitCombat(id: String, actors: List[CombatActor])
 
-  case class GetCombat()
-  case class GetCombatResponse(combat: Combat)
+  case class GetCombat(id: String)
+  case class GetCombatResponse(id: String, combat: Combat)
 
-  case class AddActors(actors: List[CombatActor])
+  case class AddActors(id: String, actors: List[CombatActor])
 
-  case class RemoveActors(actors: List[CombatActor])
+  case class RemoveActors(id: String, actors: List[CombatActor])
 }
