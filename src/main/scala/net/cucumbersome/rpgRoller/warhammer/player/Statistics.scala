@@ -53,8 +53,4 @@ object Statistics {
   class Influence(val data: Int) extends AnyVal {
     override def toString: String = data.toString
   }
-
-  class RemainingHealth(val data: Int) extends AnyVal{
-    override def toString: String = data.toString
-  }
 }

@@ -4,7 +4,7 @@ import spray.json._
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator
 import net.cucumbersome.UnitSpec
 import net.cucumbersome.rpgRoller.warhammer.player.{CombatActor, JsonFormats, Statistics}
-import net.cucumbersome.rpgRoller.warhammer.player.StatisticsConversions._
+import net.cucumbersome.rpgRoller.warhammer.player.CombatActorConversions._
 
 /**
   * Created by pokora on 11.06.2017.

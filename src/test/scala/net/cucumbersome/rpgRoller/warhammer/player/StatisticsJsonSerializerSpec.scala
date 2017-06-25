@@ -3,7 +3,7 @@ package net.cucumbersome.rpgRoller.warhammer.player
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator
 import net.cucumbersome.UnitSpec
 import spray.json._
-import net.cucumbersome.rpgRoller.warhammer.player.StatisticsConversions._
+import net.cucumbersome.rpgRoller.warhammer.player.CombatActorConversions._
 class StatisticsJsonSerializerSpec extends UnitSpec with JsonFormats with RandomDataGenerator{
   "Statistics json serializer" should {
     "serialize to json" in {

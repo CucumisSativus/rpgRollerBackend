@@ -20,10 +20,11 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
       "return the state" in {
         val sender = TestProbe()
         val worker = buildWorker
+        val id = generateId
 
-        sender.send(worker, GetCombat())
+        sender.send(worker, GetCombat(id))
         val combat = sender.expectMsgPF(defaultTimeout){
-          case GetCombatResponse(cmb) => cmb
+          case GetCombatResponse(_, cmb) => cmb
         }
 
         combat mustBe Combat.empty
@@ -34,11 +35,12 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
       "initialize with empty combat" in {
         val sender = TestProbe()
         val worker = buildWorker
+        val id = generateId
 
-        sender.send(worker, InitCombat(List()))
-        sender.send(worker, GetCombat())
+        sender.send(worker, InitCombat(id, List()))
+        sender.send(worker, GetCombat(id))
         val combat = sender.expectMsgPF(defaultTimeout){
-          case GetCombatResponse(cmb) => cmb
+          case GetCombatResponse(_, cmb) => cmb
         }
 
         combat mustBe Combat.empty
@@ -47,14 +49,15 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
       "initialize combat with actors" in {
         val sender = TestProbe()
         val worker = buildWorker
+        val id = generateId
 
         val actor = random[CombatActor]
         val expectedCombat = Combat(List(actor))
 
-        sender.send(worker, InitCombat(List(actor)))
-        sender.send(worker, GetCombat())
+        sender.send(worker, InitCombat(id, List(actor)))
+        sender.send(worker, GetCombat(id))
         val combat = sender.expectMsgPF(defaultTimeout){
-          case GetCombatResponse(cmb) => cmb
+          case GetCombatResponse(_, cmb) => cmb
         }
 
         combat mustBe expectedCombat
@@ -65,16 +68,17 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
       "add them properly" in {
         val sender = TestProbe()
         val worker = buildWorker
+        val id = generateId
 
         val (initialActor, newActor) = random[CombatActor](2) match {
           case f :: s :: Nil => (f, s)
         }
 
-        sender.send(worker, InitCombat(List(initialActor)))
-        sender.send(worker, AddActors(List(newActor)))
-        sender.send(worker, GetCombat())
+        sender.send(worker, InitCombat(id, List(initialActor)))
+        sender.send(worker, AddActors(id, List(newActor)))
+        sender.send(worker, GetCombat(id))
         val combat = sender.expectMsgPF(defaultTimeout){
-          case GetCombatResponse(cmb) => cmb
+          case GetCombatResponse(_, cmb) => cmb
         }
 
         val expectedCombat = Combat(List(initialActor, newActor))
@@ -87,16 +91,17 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
       "remove actors " in {
         val sender = TestProbe()
         val worker = buildWorker
+        val id = generateId
 
         val (firstActor, secondActor) = random[CombatActor](2) match {
           case f :: s :: Nil => (f, s)
         }
 
-        sender.send(worker, InitCombat(List(firstActor, secondActor)))
-        sender.send(worker, RemoveActors(List(secondActor)))
-        sender.send(worker, GetCombat())
+        sender.send(worker, InitCombat(id, List(firstActor, secondActor)))
+        sender.send(worker, RemoveActors(id, List(secondActor)))
+        sender.send(worker, GetCombat(id))
         val combat = sender.expectMsgPF(defaultTimeout){
-          case GetCombatResponse(cmb) => cmb
+          case GetCombatResponse(_, cmb) => cmb
         }
 
         val expectedCombat = Combat(List(firstActor))
@@ -104,6 +109,10 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
         combat mustBe expectedCombat
       }
     }
+  }
+
+  def generateId: String = {
+    UUID.randomUUID().toString
   }
 
   def buildWorker: ActorRef = {

@@ -4,7 +4,7 @@ import cats.data._
 import net.cucumbersome.rpgRoller.warhammer.combat.initiative.Initiative
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
 
-case class Combat(players: List[CombatActor])
+case class Combat(combatActors: List[CombatActor])
 
 object Combat{
   def addActor(players: List[CombatActor]): State[Combat, Unit] =  State[Combat, Unit] {

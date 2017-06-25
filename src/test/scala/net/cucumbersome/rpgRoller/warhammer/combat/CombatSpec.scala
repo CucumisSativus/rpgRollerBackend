@@ -23,7 +23,7 @@ class CombatSpec extends UnitSpec with RandomDataGenerator{
           _ <- Combat.addActor(List(random[CombatActor]))
         } yield Unit
         val (newCombat, _) = combatManip.run(combat).value
-        newCombat.players.length mustBe combat.players.length +1
+        newCombat.combatActors.length mustBe combat.combatActors.length +1
       }
     }
 
@@ -33,8 +33,8 @@ class CombatSpec extends UnitSpec with RandomDataGenerator{
           _ <- Combat.sortByInitiative(() => 1)
         } yield Unit
         val (newCombat, _) = combatManip.run(combat).value
-        newCombat.players.length mustBe combat.players.length
-        newCombat.players must contain allOf(firstPlayer, midPlayer, lastPlayer)
+        newCombat.combatActors.length mustBe combat.combatActors.length
+        newCombat.combatActors must contain allOf(firstPlayer, midPlayer, lastPlayer)
       }
     }
 
@@ -45,8 +45,8 @@ class CombatSpec extends UnitSpec with RandomDataGenerator{
         } yield removed
         val (newCombat, removedActors) = combatManip.run(combat).value
         removedActors mustBe List(midPlayer)
-        newCombat.players mustNot contain only(midPlayer)
-        newCombat.players must contain allOf(firstPlayer, lastPlayer)
+        newCombat.combatActors mustNot contain only(midPlayer)
+        newCombat.combatActors must contain allOf(firstPlayer, lastPlayer)
       }
     }
 
@@ -58,7 +58,7 @@ class CombatSpec extends UnitSpec with RandomDataGenerator{
         } yield removed
         val (newCombat, removed) = combatManip.run(combat).value
         removed.length mustBe 0
-        newCombat.players(1).hp mustBe newHealth
+        newCombat.combatActors(1).hp mustBe newHealth
       }
       "remove the player if health drops to 0" in {
         val newHealth = new CombatActor.Health(0)
@@ -67,7 +67,7 @@ class CombatSpec extends UnitSpec with RandomDataGenerator{
         } yield removed
 
         val (newCombat, removedPlayers) = combatManip.run(combat).value
-        newCombat.players mustNot contain(midPlayer)
+        newCombat.combatActors mustNot contain(midPlayer)
         removedPlayers mustBe List(midPlayer.copy(hp = newHealth))
       }
       "remove the player if health drops below 0" in {
@@ -77,7 +77,7 @@ class CombatSpec extends UnitSpec with RandomDataGenerator{
         } yield removed
 
         val (newCombat, removedPlayers) = combatManip.run(combat).value
-        newCombat.players mustNot contain(midPlayer)
+        newCombat.combatActors mustNot contain(midPlayer)
         removedPlayers mustBe List(midPlayer.copy(hp = newHealth))
       }
     }
