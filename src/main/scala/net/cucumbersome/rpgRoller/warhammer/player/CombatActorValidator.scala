@@ -1,34 +1,29 @@
 package net.cucumbersome.rpgRoller.warhammer.player
-import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.data.Validated.{Invalid, Valid}
-import cats.{Applicative, Apply, SemigroupK}
+import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import cats.kernel.Semigroup
-import cats.implicits._
-
-import net.cucumbersome.rpgRoller.warhammer
-import net.cucumbersome.rpgRoller.warhammer.player.CombatActor._
-import net.cucumbersome.rpgRoller.warhammer.player.Statistics._
+import cats.{Apply, SemigroupK}
 object CombatActorValidator {
   import net.cucumbersome.rpgRoller.warhammer.player.CombatActorConversions._
   implicit val nelSemigroup: Semigroup[NonEmptyList[CombatActorValidationError]] =
     SemigroupK[NonEmptyList].algebra[CombatActorValidationError]
 
-  def validate(a: CombatActor): ValidatedNel[CombatActorValidationError, CombatActor] = {
+  def validate(a: CombatActorPresenter): ValidatedNel[CombatActorValidationError, CombatActor] = {
     val s = a.statistics
     Apply[ValidatedNel[CombatActorValidationError, ?]].map13(
-      validateStringStatistics(a.id.data, "id").toValidatedNel,
-      validateStringStatistics(a.name.data, "name").toValidatedNel,
-      validateIntStatistics(a.hp.data, "hp").toValidatedNel,
-      validateIntStatistics(s.weaponSkill.data, "weaponSkill").toValidatedNel,
-      validateIntStatistics(s.ballisticSkill.data, "ballisticSkill").toValidatedNel,
-      validateIntStatistics(s.strength.data, "strength").toValidatedNel,
-      validateIntStatistics(s.toughness.data, "toughness").toValidatedNel,
-      validateIntStatistics(s.agility.data, "agility").toValidatedNel,
-      validateIntStatistics(s.intelligence.data, "intelligence").toValidatedNel,
-      validateIntStatistics(s.perception.data, "perception").toValidatedNel,
-      validateIntStatistics(s.willPower.data, "willPower").toValidatedNel,
-      validateIntStatistics(s.fellowship.data, "fellowship").toValidatedNel,
-      validateIntStatistics(s.influence.data, "influence").toValidatedNel
+      validateStringStatistics(a.id, "id").toValidatedNel,
+      validateStringStatistics(a.name, "name").toValidatedNel,
+      validateIntStatistics(a.hp, "hp").toValidatedNel,
+      validateIntStatistics(s.weaponSkill, "weaponSkill").toValidatedNel,
+      validateIntStatistics(s.ballisticSkill, "ballisticSkill").toValidatedNel,
+      validateIntStatistics(s.strength, "strength").toValidatedNel,
+      validateIntStatistics(s.toughness, "toughness").toValidatedNel,
+      validateIntStatistics(s.agility, "agility").toValidatedNel,
+      validateIntStatistics(s.intelligence, "intelligence").toValidatedNel,
+      validateIntStatistics(s.perception, "perception").toValidatedNel,
+      validateIntStatistics(s.willPower, "willPower").toValidatedNel,
+      validateIntStatistics(s.fellowship, "fellowship").toValidatedNel,
+      validateIntStatistics(s.influence, "influence").toValidatedNel
     ) {case(id, name, hp, ws, bs, str, tg, agi, int, per, wp, fel, infl) =>
         CombatActor(
           id = id.toId,

@@ -16,8 +16,8 @@ class CombatActorPresenterSpec extends UnitSpec with RandomDataGenerator{
         val caStats = ca.statistics
         val obtainedStats = obtained.statistics
 
-        obtainedStats.weaonSkill mustBe caStats.weaponSkill.data
-        obtainedStats.ballisticsSkill mustBe caStats.ballisticSkill.data
+        obtainedStats.weaponSkill mustBe caStats.weaponSkill.data
+        obtainedStats.ballisticSkill mustBe caStats.ballisticSkill.data
         obtainedStats.strength mustBe caStats.strength.data
         obtainedStats.toughness mustBe caStats.toughness.data
         obtainedStats.agility mustBe caStats.agility.data
@@ -40,8 +40,8 @@ class CombatActorPresenterSpec extends UnitSpec with RandomDataGenerator{
         val capStats = cap.statistics
         val obtainedStats = obtained.statistics
 
-        capStats.weaonSkill mustBe obtainedStats.weaponSkill.data
-        capStats.ballisticsSkill mustBe obtainedStats.ballisticSkill.data
+        capStats.weaponSkill mustBe obtainedStats.weaponSkill.data
+        capStats.ballisticSkill mustBe obtainedStats.ballisticSkill.data
         capStats.strength mustBe obtainedStats.strength.data
         capStats.toughness mustBe obtainedStats.toughness.data
         capStats.agility mustBe obtainedStats.agility.data
