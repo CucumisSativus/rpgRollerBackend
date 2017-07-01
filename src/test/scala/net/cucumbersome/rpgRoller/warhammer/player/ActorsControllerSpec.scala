@@ -4,11 +4,12 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator
 import net.cucumbersome.UnitSpec
-import net.cucumbersome.rpgRoller.warhammer
 import net.cucumbersome.rpgRoller.warhammer.player
+import net.cucumbersome.rpgRoller.warhammer.player.CombatActorPresenter.fromCombatActor
 import net.cucumbersome.test.CombatActorGenerator.arbitraryCombatActor
 import spray.json._
 class ActorsControllerSpec extends UnitSpec with ScalatestRouteTest with RandomDataGenerator with JsonFormats{
+  private val convertActorToPresenter = fromCombatActor.get _
   "Actors controller" when {
     "Getting list or one actor" should {
       val (actor1, actor2) = random[CombatActor](2) match {
@@ -20,12 +21,12 @@ class ActorsControllerSpec extends UnitSpec with ScalatestRouteTest with RandomD
       "return list of actors" in {
         Get("/actors") ~> routes ~> check(
 
-          responseAs[String].parseJson mustBe List(actor1, actor2).toJson
+          responseAs[String].parseJson mustBe List(actor1, actor2).map(convertActorToPresenter).toJson
         )
       }
       "return one actor" in {
         Get(s"/actor/${actor1.id.data}") ~> routes ~> check(
-          responseAs[String].parseJson mustBe actor1.toJson
+          responseAs[String].parseJson mustBe convertActorToPresenter(actor1).toJson
         )
       }
 
@@ -52,7 +53,7 @@ class ActorsControllerSpec extends UnitSpec with ScalatestRouteTest with RandomD
         val request = HttpRequest(
           method = HttpMethods.POST,
           uri = "/actors",
-          entity = HttpEntity(MediaTypes.`application/json`, validActor.toJson.compactPrint)
+          entity = HttpEntity(MediaTypes.`application/json`, convertActorToPresenter(validActor).toJson.compactPrint)
         )
 
         request ~> routes ~> check{
@@ -67,7 +68,7 @@ class ActorsControllerSpec extends UnitSpec with ScalatestRouteTest with RandomD
         val request = HttpRequest(
           method = HttpMethods.POST,
           uri = "/actors",
-          entity = HttpEntity(MediaTypes.`application/json`, invalidActor.toJson.compactPrint)
+          entity = HttpEntity(MediaTypes.`application/json`, convertActorToPresenter(invalidActor).toJson.compactPrint)
         )
 
         request ~> routes ~> check{
