@@ -1,5 +1,10 @@
 package net.cucumbersome.rpgRoller.warhammer.combat
 
-trait CombatJsonSerializer {
+import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
+trait CombatJsonSerializer extends DefaultJsonProtocol {
+
+  case class CreateCombatParameters(actorIds: List[String])
+
+  implicit val createCombatJson: RootJsonFormat[CreateCombatParameters] = jsonFormat1(CreateCombatParameters.apply)
 }

@@ -30,5 +30,6 @@ object Combat{
   }
 
   def empty: Combat = Combat(List())
+
 }
 
