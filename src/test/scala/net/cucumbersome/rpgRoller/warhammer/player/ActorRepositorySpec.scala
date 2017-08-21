@@ -15,7 +15,7 @@ class ActorRepositorySpec extends UnitSpec with RandomDataGenerator {
       val repo = new InMemoryActorRepository(List(actor))
 
       "filter by name" in {
-        val expression = FilterExpression(FilterExpression.ByName("test"))
+        val expression = FilterExpression.ByName("test")
         futureValue(repo.filter(expression)) mustBe List(actor)
       }
     }
@@ -25,7 +25,7 @@ class ActorRepositorySpec extends UnitSpec with RandomDataGenerator {
       val repo = new InMemoryActorRepository(List(actor))
 
       "filter by name" in {
-        val expression = FilterExpression(FilterExpression.ByHealth(5))
+        val expression = FilterExpression.ByHealth(5)
         futureValue(repo.filter(expression)) mustBe List(actor)
       }
     }

@@ -10,7 +10,7 @@ trait ActorRepository {
   def find(id: CombatActor.Id)(implicit ec: ExecutionContext): Future[Option[CombatActor]]
   def add(combatActor: CombatActor)(implicit ec: ExecutionContext): Future[Done]
 
-  def filter[A <: FilterExpression.Column](expression: FilterExpression[A])(implicit ec: ExecutionContext): Future[List[CombatActor]]
+  def filter(expression: FilterExpression)(implicit ec: ExecutionContext): Future[List[CombatActor]]
 }
 
 class InMemoryActorRepository(initialActors: List[CombatActor]) extends ActorRepository {
@@ -33,7 +33,7 @@ class InMemoryActorRepository(initialActors: List[CombatActor]) extends ActorRep
     actors = List()
   }
 
-  override def filter[A <: FilterExpression.Column](expression: FilterExpression[A])(implicit ec: ExecutionContext): Future[List[CombatActor]] = expression.column match {
+  override def filter(expression: FilterExpression)(implicit ec: ExecutionContext): Future[List[CombatActor]] = expression match {
     case ByName(value) => Future.successful(actors.filter(_.name.data.contains(value)))
     case ByHealth(value) => Future.successful(actors.filter(_.hp.data == value))
   }
@@ -41,23 +41,11 @@ class InMemoryActorRepository(initialActors: List[CombatActor]) extends ActorRep
 
 object ActorRepository {
 
-  case class FilterExpression[A <: FilterExpression.Column](column: A)
-
+  sealed trait FilterExpression
   object FilterExpression {
 
-    sealed trait Column {
-      type Value
+    case class ByName(value: String) extends FilterExpression
 
-      def value: Value
-    }
-
-    case class ByName(value: String) extends Column {
-      type Value = String
-    }
-
-    case class ByHealth(value: Int) extends Column {
-      type Value = Int
-    }
-
+    case class ByHealth(value: Int) extends FilterExpression
   }
 }
