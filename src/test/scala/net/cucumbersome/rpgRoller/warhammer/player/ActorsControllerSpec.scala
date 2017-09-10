@@ -8,7 +8,8 @@ import net.cucumbersome.rpgRoller.warhammer.player
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActorPresenter.fromCombatActor
 import net.cucumbersome.test.CombatActorGenerator.arbitraryCombatActor
 import spray.json._
-class ActorsControllerSpec extends UnitSpec with ScalatestRouteTest with RandomDataGenerator with JsonFormats{
+
+class ActorsControllerSpec extends UnitSpec with ScalatestRouteTest with RandomDataGenerator with CombatActorJsonFormats {
   private val convertActorToPresenter = fromCombatActor.get _
   "Actors controller" when {
     "Getting list or one actor" should {

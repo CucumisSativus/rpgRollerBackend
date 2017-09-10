@@ -3,10 +3,10 @@ package net.cucumbersome.rpgRoller.warhammer.combat
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator
 import net.cucumbersome.UnitSpec
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActorPresenter._
-import net.cucumbersome.rpgRoller.warhammer.player.{CombatActorPresenter, JsonFormats}
+import net.cucumbersome.rpgRoller.warhammer.player.{CombatActorJsonFormats, CombatActorPresenter}
 import spray.json._
 
-class CombatActorJsonSerializerSpec extends UnitSpec with JsonFormats with RandomDataGenerator {
+class CombatActorCombatActorJsonSerializerSpec extends UnitSpec with CombatActorJsonFormats with RandomDataGenerator {
   "CombatActor json serializer" should {
     "serialize to json" in {
       val obj = random[CombatActorPresenter]

@@ -1,11 +1,9 @@
 package net.cucumbersome.rpgRoller.warhammer.combat
 
-import akka.actor.{ActorLogging, Props}
+import akka.actor.{ActorLogging, ActorRef, Props}
 import akka.persistence.{PersistentActor, RecoveryCompleted}
 import cats.syntax.option._
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
-
-import scala.concurrent.Promise
 
 class CombatHandler(actorId: String) extends PersistentActor with ActorLogging {
 
@@ -20,7 +18,7 @@ class CombatHandler(actorId: String) extends PersistentActor with ActorLogging {
     case RecoveryCompleted => log.debug("Recovery completed!")
   }
 
-  private def handleEvent(responder: Option[Promise[GetCombatResponse]])(evt: CombatEvent): Unit = evt match {
+  private def handleEvent(responder: Option[ActorRef])(evt: CombatEvent): Unit = evt match {
     case CombatInitialized(id, actors) =>
       val (newState, _) = Combat.addActor(actors).run(Combat.empty).value
       state = state + (id -> newState)
@@ -35,8 +33,8 @@ class CombatHandler(actorId: String) extends PersistentActor with ActorLogging {
       respondWithCombat(responder, id)
   }
 
-  private def respondWithCombat(responder: Option[Promise[GetCombatResponse]], id: String): Unit = responder match {
-    case Some(r) => r.success(returnCombat(id))
+  private def respondWithCombat(responder: Option[ActorRef], id: String): Unit = responder match {
+    case Some(sender) => sender ! returnCombat(id)
     case None =>
   }
 
@@ -45,19 +43,14 @@ class CombatHandler(actorId: String) extends PersistentActor with ActorLogging {
   }
 
   override def receiveCommand: Receive = {
-    case c: CombatCommand => handleCommand(c, None)
-    case WrappedCommand(c, r) => handleCommand(c, r.some)
+    case InitCombat(id, actors) => persist(CombatInitialized(id, actors))(handleEvent(sender().some))
+    case AddActors(id, actors) => persist(ActorsAdded(id, actors))(handleEvent(sender().some))
+    case RemoveActors(id, actors) => persist(ActorsRemoved(id, actors))(handleEvent(sender().some))
     case GetCombat(id) => sender ! returnCombat(id)
   }
 
   private def getCombat(id: String): Combat = {
     state.getOrElse(id, Combat.empty)
-  }
-
-  private def handleCommand(command: CombatCommand, response: Option[Promise[GetCombatResponse]]): Unit = command match {
-    case InitCombat(id, actors) => persist(CombatInitialized(id, actors))(handleEvent(response))
-    case AddActors(id, actors) => persist(ActorsAdded(id, actors))(handleEvent(response))
-    case RemoveActors(id, actors) => persist(ActorsRemoved(id, actors))(handleEvent(response))
   }
 }
 
@@ -81,8 +74,6 @@ object CombatHandler {
   case class AddActors(id: String, actors: List[CombatActor]) extends CombatCommand
 
   case class RemoveActors(id: String, actors: List[CombatActor]) extends CombatCommand
-
-  case class WrappedCommand(command: CombatCommand, responsePromise: Promise[GetCombatResponse])
 
   case class GetCombat(id: String)
 

@@ -4,7 +4,8 @@ import com.danielasfregola.randomdatagenerator.RandomDataGenerator
 import net.cucumbersome.UnitSpec
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActorPresenter.{Statistics => StatsP}
 import spray.json._
-class StatisticsJsonSerializerSpec extends UnitSpec with JsonFormats with RandomDataGenerator{
+
+class StatisticsCombatActorJsonSerializerSpec extends UnitSpec with CombatActorJsonFormats with RandomDataGenerator {
   "Statistics json serializer" should {
     "serialize to json" in {
       val obj = random[StatsP]

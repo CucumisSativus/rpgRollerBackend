@@ -9,7 +9,7 @@ import net.cucumbersome.rpgRoller.warhammer.player.actions.{CommandFailed, Creat
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
 class ActorsController(actorRepository: ActorRepository)(implicit executionContext: ExecutionContext)
-  extends JsonFormats with SprayJsonSupport{
+  extends CombatActorJsonFormats with SprayJsonSupport {
   private val saveActor = CreateActor.createActor(actorRepository) _
   private val convertActor = CombatActorPresenter.fromCombatActor.get _
   private val convertActors = (l: List[CombatActor]) => l.map(convertActor)
