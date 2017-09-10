@@ -7,6 +7,7 @@ import net.cucumbersome.rpgRoller.warhammer.player.ActorRepository.FilterExpress
 import scala.concurrent.{ExecutionContext, Future}
 trait ActorRepository {
   def all(implicit ec: ExecutionContext): Future[List[CombatActor]]
+
   def find(id: CombatActor.Id)(implicit ec: ExecutionContext): Future[Option[CombatActor]]
   def add(combatActor: CombatActor)(implicit ec: ExecutionContext): Future[Done]
 
@@ -36,6 +37,7 @@ class InMemoryActorRepository(initialActors: List[CombatActor]) extends ActorRep
   override def filter(expression: FilterExpression)(implicit ec: ExecutionContext): Future[List[CombatActor]] = expression match {
     case ByName(value) => Future.successful(actors.filter(_.name.data.contains(value)))
     case ByHealth(value) => Future.successful(actors.filter(_.hp.data == value))
+    case ByIds(ids) => Future.successful(actors.filter(a => ids.contains(a.id.data)))
   }
 }
 
@@ -47,5 +49,7 @@ object ActorRepository {
     case class ByName(value: String) extends FilterExpression
 
     case class ByHealth(value: Int) extends FilterExpression
+
+    case class ByIds(ids: Seq[String]) extends FilterExpression
   }
 }

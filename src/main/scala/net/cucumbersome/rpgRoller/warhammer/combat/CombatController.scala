@@ -10,10 +10,12 @@ import net.cucumbersome.rpgRoller.warhammer.combat.CombatController.{CombatIdGen
 import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler.InitCombat
 import net.cucumbersome.rpgRoller.warhammer.combat.CombatJsonSerializer._
 import net.cucumbersome.rpgRoller.warhammer.player.ActorRepository
+import net.cucumbersome.rpgRoller.warhammer.player.ActorRepository.FilterExpression
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class CombatController(combatHandler: ActorRef, actorRepository: ActorRepository, idGenerator: CombatIdGenerator = DefaultIdGenerator) {
+class CombatController(combatHandler: ActorRef, actorRepository: ActorRepository, idGenerator: CombatIdGenerator = DefaultIdGenerator)
+                      (implicit val ec: ExecutionContext) {
 
   def route: Route = pathPrefix("combat") {
     path("new") {
@@ -30,8 +32,13 @@ class CombatController(combatHandler: ActorRef, actorRepository: ActorRepository
   private def createCombat(params: CreateCombatParameters): Future[NewCombat] = {
     val actorIds = params.actorIds
     val newId = idGenerator.generateId
-    combatHandler ! InitCombat(newId, List())
-    Future.successful(NewCombat(newId))
+
+    for {
+      actors <- actorRepository.filter(FilterExpression.ByIds(actorIds))
+    } yield {
+      combatHandler ! InitCombat(newId, actors)
+      NewCombat(newId)
+    }
   }
 }
 
