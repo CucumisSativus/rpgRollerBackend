@@ -1,0 +1,7 @@
+package net.cucumbersome
+
+import akka.http.scaladsl.testkit.ScalatestRouteTest
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator
+import net.cucumbersome.rpgRoller.warhammer.player.CombatActorJsonFormats
+
+class RouteSpec extends UnitSpec with ScalatestRouteTest with RandomDataGenerator with CombatActorJsonFormats

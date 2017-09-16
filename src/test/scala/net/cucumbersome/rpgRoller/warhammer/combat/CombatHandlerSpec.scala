@@ -1,20 +1,22 @@
 package net.cucumbersome.rpgRoller.warhammer.combat
 
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 import akka.actor.{ActorRef, ActorSystem}
 import akka.testkit.{TestKit, TestProbe}
+import akka.util.Timeout
+import com.danielasfregola.randomdatagenerator.RandomDataGenerator
 import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler._
+import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
 import net.cucumbersome.test.DefaultTimeouts
 import org.scalatest.{MustMatchers, WordSpecLike}
-import akka.pattern.ask
-import com.danielasfregola.randomdatagenerator.RandomDataGenerator
-import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
 
 class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
   with WordSpecLike with MustMatchers with DefaultTimeouts with RandomDataGenerator{
   import net.cucumbersome.test.CombatActorGenerator.arbitraryCombatActor
 
+  implicit val timeout: Timeout = Timeout(2, TimeUnit.SECONDS)
   "A combat handler" when {
     "asking for state" should {
       "return the state" in {
@@ -74,17 +76,15 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
           case f :: s :: Nil => (f, s)
         }
 
+        val expectedCombat = Combat(List(initialActor, newActor))
         sender.send(worker, InitCombat(id, List(initialActor)))
         sender.send(worker, AddActors(id, List(newActor)))
-        sender.send(worker, GetCombat(id))
-        val combat = sender.expectMsgPF(defaultTimeout){
-          case GetCombatResponse(_, cmb) => cmb
+        sender.fishForMessage() {
+          case GetCombatResponse(oid, oCombat) if oid == id && oCombat == expectedCombat => true
+          case _ => false
         }
-
-        val expectedCombat = Combat(List(initialActor, newActor))
-
-        combat mustBe expectedCombat
       }
+
     }
 
     "removing actors" should {
@@ -97,16 +97,14 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
           case f :: s :: Nil => (f, s)
         }
 
-        sender.send(worker, InitCombat(id, List(firstActor, secondActor)))
-        sender.send(worker, RemoveActors(id, List(secondActor)))
-        sender.send(worker, GetCombat(id))
-        val combat = sender.expectMsgPF(defaultTimeout){
-          case GetCombatResponse(_, cmb) => cmb
-        }
-
         val expectedCombat = Combat(List(firstActor))
+        sender.send(worker, InitCombat(id, List(firstActor, secondActor)))
+        sender.send(worker, RemoveActors(id, List(secondActor.id)))
 
-        combat mustBe expectedCombat
+        sender.fishForMessage() {
+          case GetCombatResponse(oid, oCombat) if oid == id && oCombat == expectedCombat => true
+          case _ => false
+        }
       }
     }
   }

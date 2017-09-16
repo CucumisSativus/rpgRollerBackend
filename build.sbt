@@ -11,6 +11,14 @@ resolvers += Resolver.sonatypeRepo("releases")
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
 
+scalacOptions ++= Seq(
+  "-feature",
+  "-language:postfixOps",
+  "-language:existentials",
+  "-language:higherKinds",
+  "-language:implicitConversions"
+)
+
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-persistence" % akkaVersion,

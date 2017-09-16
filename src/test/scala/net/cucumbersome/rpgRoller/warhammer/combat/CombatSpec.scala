@@ -41,11 +41,11 @@ class CombatSpec extends UnitSpec with RandomDataGenerator{
     "removing players from combat" should {
       "removes player" in {
         val combatManip = for{
-          removed <- Combat.removeActors(List(midPlayer))
+          removed <- Combat.removeActors(List(midPlayer.id))
         } yield removed
         val (newCombat, removedActors) = combatManip.run(combat).value
         removedActors mustBe List(midPlayer)
-        newCombat.combatActors mustNot contain only(midPlayer)
+        newCombat.combatActors mustNot contain only midPlayer
         newCombat.combatActors must contain allOf(firstPlayer, lastPlayer)
       }
     }

@@ -3,7 +3,7 @@ package net.cucumbersome.rpgRoller.warhammer.player
 import spray.json._
 
 
-trait JsonFormats extends DefaultJsonProtocol {
+trait CombatActorJsonFormats extends DefaultJsonProtocol {
   implicit val statisticsFormat: RootJsonFormat[CombatActorPresenter.Statistics] =
     jsonFormat10(CombatActorPresenter.Statistics)
 
