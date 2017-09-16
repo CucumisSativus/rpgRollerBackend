@@ -17,7 +17,7 @@ import net.cucumbersome.rpgRoller.warhammer.player.ActorRepository.FilterExpress
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CombatController(combatHandler: ActorRef, actorRepository: ActorRepository, idGenerator: CombatIdGenerator = DefaultIdGenerator)
+class CombatController(commandGateway: ActorRef, actorRepository: ActorRepository, idGenerator: CombatIdGenerator = DefaultIdGenerator)
                       (implicit val ec: ExecutionContext) {
 
   implicit val timeout: Timeout = Timeout(2, TimeUnit.SECONDS)
@@ -50,7 +50,7 @@ class CombatController(combatHandler: ActorRef, actorRepository: ActorRepository
 
     for {
       actors <- actorRepository.filter(FilterExpression.ByIds(actorIds))
-      response <- (combatHandler ? InitCombat(newId, actors)).mapTo[GetCombatResponse]
+      response <- (commandGateway ? InitCombat(newId, actors)).mapTo[GetCombatResponse]
     } yield {
       CombatPresenter.combatToCombatPresenter(response.id, response.combat)
     }
@@ -60,7 +60,7 @@ class CombatController(combatHandler: ActorRef, actorRepository: ActorRepository
     val actorIds = params.actorIds
     for {
       actors <- actorRepository.filter(FilterExpression.ByIds(actorIds))
-      response <- (combatHandler ? AddActors(params.combatId, actors)).mapTo[GetCombatResponse]
+      response <- (commandGateway ? AddActors(params.combatId, actors)).mapTo[GetCombatResponse]
     } yield {
       CombatPresenter.combatToCombatPresenter(response.id, response.combat)
     }

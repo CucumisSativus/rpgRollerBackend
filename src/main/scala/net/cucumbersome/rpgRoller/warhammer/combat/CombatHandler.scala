@@ -75,7 +75,7 @@ object CombatHandler {
 
   case class RemoveActors(id: String, actors: List[CombatActor]) extends CombatCommand
 
-  case class GetCombat(id: String)
+  case class GetCombat(id: String) extends CombatCommand
 
   case class GetCombatResponse(id: String, combat: Combat)
 
