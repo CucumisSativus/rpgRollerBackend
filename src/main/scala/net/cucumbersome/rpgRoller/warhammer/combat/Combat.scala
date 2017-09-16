@@ -15,8 +15,10 @@ object Combat{
     case Combat(players) => (Combat(Initiative.generateInitiativeAndSort(roll)(players)), Unit)
   }
 
-  def removeActors(actors: List[CombatActor]) : State[Combat, List[CombatActor]] = State[Combat, List[CombatActor]] {
-    case Combat(players) => (Combat(players.filterNot(actors.contains(_))), actors)
+  def removeActors(ids: List[CombatActor.Id]): State[Combat, List[CombatActor]] = State[Combat, List[CombatActor]] {
+    case Combat(players) =>
+      val newActors = players.filterNot(p => ids.contains(p.id))
+      (Combat(newActors), players.diff(newActors))
   }
 
   def updateHealth(actor: CombatActor, newHealth: CombatActor.Health): State[Combat, List[CombatActor]] = State[Combat, List[CombatActor]]{

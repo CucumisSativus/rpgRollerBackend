@@ -10,10 +10,10 @@ import akka.http.scaladsl.server._
 import akka.pattern.ask
 import akka.util.Timeout
 import net.cucumbersome.rpgRoller.warhammer.combat.CombatController.{CombatIdGenerator, DefaultIdGenerator}
-import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler.{AddActors, GetCombatResponse, InitCombat}
+import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler.{AddActors, GetCombatResponse, InitCombat, RemoveActors}
 import net.cucumbersome.rpgRoller.warhammer.combat.CombatJsonSerializer._
-import net.cucumbersome.rpgRoller.warhammer.player.ActorRepository
 import net.cucumbersome.rpgRoller.warhammer.player.ActorRepository.FilterExpression
+import net.cucumbersome.rpgRoller.warhammer.player.{ActorRepository, CombatActor}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -21,6 +21,7 @@ class CombatController(commandGateway: ActorRef, actorRepository: ActorRepositor
                       (implicit val ec: ExecutionContext) {
 
   implicit val timeout: Timeout = Timeout(2, TimeUnit.SECONDS)
+
 
   def route: Route = pathPrefix("combat") {
     path("new") {
@@ -40,6 +41,15 @@ class CombatController(commandGateway: ActorRef, actorRepository: ActorRepositor
             }
           }
         }
+      } ~
+        path("remove-actors") {
+          patch {
+            entity(as[RemoveActorsFromCombatParameters]) { params =>
+              completeOrRecoverWith(removeActorsFromCombat(params)) { ex =>
+                failWith(ex)
+              }
+            }
+          }
       }
     }
   }
@@ -56,6 +66,12 @@ class CombatController(commandGateway: ActorRef, actorRepository: ActorRepositor
     }
   }
 
+  private def removeActorsFromCombat(params: RemoveActorsFromCombatParameters): Future[CombatPresenter] = {
+    val actorIds = params.actorIds.map(new CombatActor.Id(_))
+    (commandGateway ? RemoveActors(params.combatId, actorIds)).mapTo[GetCombatResponse].
+      map(r => CombatPresenter.combatToCombatPresenter(r.id, r.combat))
+
+  }
   private def addActorsToCombat(params: AddActorsToCombatParameters): Future[CombatPresenter] = {
     val actorIds = params.actorIds
     for {

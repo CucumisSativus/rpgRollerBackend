@@ -27,8 +27,8 @@ class CombatHandler(actorId: String) extends PersistentActor with ActorLogging {
       val (newState, _) = Combat.addActor(actors).run(getCombat(id)).value
       state = state + (id -> newState)
       respondWithCombat(responder, id)
-    case ActorsRemoved(id, actorsToBeRemoved) =>
-      val (newState, _) = Combat.removeActors(actorsToBeRemoved).run(getCombat(id)).value
+    case ActorsRemoved(id, idsOfActorsToBeRemoved) =>
+      val (newState, _) = Combat.removeActors(idsOfActorsToBeRemoved).run(getCombat(id)).value
       state = state + (id -> newState)
       respondWithCombat(responder, id)
   }
@@ -63,7 +63,7 @@ object CombatHandler {
 
   case class ActorsAdded(id: String, actors: List[CombatActor]) extends CombatEvent
 
-  case class ActorsRemoved(id: String, actors: List[CombatActor]) extends CombatEvent
+  case class ActorsRemoved(id: String, actorIds: List[CombatActor.Id]) extends CombatEvent
 
   sealed trait CombatCommand {
     def id: String
@@ -73,7 +73,7 @@ object CombatHandler {
 
   case class AddActors(id: String, actors: List[CombatActor]) extends CombatCommand
 
-  case class RemoveActors(id: String, actors: List[CombatActor]) extends CombatCommand
+  case class RemoveActors(id: String, actors: List[CombatActor.Id]) extends CombatCommand
 
   case class GetCombat(id: String) extends CombatCommand
 

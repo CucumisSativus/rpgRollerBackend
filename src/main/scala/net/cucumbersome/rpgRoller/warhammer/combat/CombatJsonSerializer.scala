@@ -12,10 +12,12 @@ trait CombatJsonSerializer extends DefaultJsonProtocol with CombatActorJsonForma
   implicit val createCombatJson: RootJsonFormat[CreateCombatParameters] = jsonFormat1(CreateCombatParameters.apply)
   implicit val combatInitializedJson: RootJsonFormat[NewCombatResponse] = jsonFormat1(NewCombatResponse)
   implicit val addActorsToCombatJson: RootJsonFormat[AddActorsToCombatParameters] = jsonFormat2(AddActorsToCombatParameters)
-
+  implicit val removeActortsFromConbatJson: RootJsonFormat[RemoveActorsFromCombatParameters] = jsonFormat2(RemoveActorsFromCombatParameters)
   case class NewCombatResponse(combatId: String)
 
   case class AddActorsToCombatParameters(combatId: String, actorIds: List[String])
+
+  case class RemoveActorsFromCombatParameters(combatId: String, actorIds: List[String])
 
 
 }

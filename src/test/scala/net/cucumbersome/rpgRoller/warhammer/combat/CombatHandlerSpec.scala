@@ -99,7 +99,7 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
 
         val expectedCombat = Combat(List(firstActor))
         sender.send(worker, InitCombat(id, List(firstActor, secondActor)))
-        sender.send(worker, RemoveActors(id, List(secondActor)))
+        sender.send(worker, RemoveActors(id, List(secondActor.id)))
 
         sender.fishForMessage() {
           case GetCombatResponse(oid, oCombat) if oid == id && oCombat == expectedCombat => true

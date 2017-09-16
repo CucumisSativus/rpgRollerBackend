@@ -62,6 +62,26 @@ class CombatControllerSpec extends RouteSpec {
 
       }
     }
+
+    "removing actor from an existing combat" should {
+      "remove actors if combat is there" in {
+        val gateway = buildGateway
+        val combatId = "combatId"
+        val (actor1, actor2, actor3, actor4) = build4Actors
+        val actors = List(actor1, actor2, actor3, actor4)
+        val expectedAdtors = List(actor1, actor2)
+        val repository = new InMemoryActorRepository(List(actor1, actor2, actor3, actor4))
+
+        val requestBody = RemoveActorsFromCombatParameters(combatId, List(actor3.id.data, actor4.id.data)).toJson.compactPrint
+
+        gateway ! InitCombat(combatId, actors)
+
+        val route = getRoute(gateway, repository)
+        Patch(s"/combat/$combatId/remove-actors").withEntity(ContentTypes.`application/json`, requestBody) ~> route ~> check {
+          responseAs[String].parseJson mustBe CombatPresenter(combatId, expectedAdtors.map(CombatActorPresenter.fromCombatActor.get)).toJson
+        }
+      }
+    }
   }
 
   def getRoute(handler: ActorRef, repo: ActorRepository, idGenerator: CombatIdGenerator = DefaultIdGenerator): Route = {
