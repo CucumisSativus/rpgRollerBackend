@@ -6,13 +6,9 @@ case class CombatActor(id: Id, name: Name, statistics: Statistics, hp: Health)
 
 object CombatActor{
 
-  class Id(val data: String) extends AnyVal with Serializable {
-    override def toString: String = data
-  }
-  class Health(val data: Int) extends AnyVal{
-    override def toString: String = data.toString
-  }
-  class Name(val data: String) extends AnyVal{
-    override def toString: String = data
-  }
+  case class Id(data: String) extends AnyVal with Serializable
+
+  case class Health(data: Int) extends AnyVal
+
+  case class Name(data: String) extends AnyVal
 }

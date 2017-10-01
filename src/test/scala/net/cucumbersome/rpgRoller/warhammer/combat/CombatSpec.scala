@@ -8,8 +8,12 @@ class CombatSpec extends UnitSpec with RandomDataGenerator{
   import net.cucumbersome.test.CombatActorGenerator.arbitraryCombatActor
 
   "A combat" when {
-    val (firstPlayer, midPlayer, lastPlayer) = random[CombatActor](3) match{
-      case f :: m :: l :: Nil => (f, m, l)
+    val (firstPlayer, midPlayer, lastPlayer) = random[InCombatActor](3) match {
+      case f :: m :: l :: Nil => (
+        f.copy(currentHealth = CombatActor.Health(10)),
+        m.copy(currentHealth = CombatActor.Health(10)),
+        l.copy(currentHealth = CombatActor.Health(10))
+      )
     }
 
     val combat = Combat(List(
@@ -20,7 +24,7 @@ class CombatSpec extends UnitSpec with RandomDataGenerator{
     "adding new players" should {
       "add it properly" in {
         val combatManip = for {
-          _ <- Combat.addActor(List(random[CombatActor]))
+          _ <- Combat.addActor(List(random[InCombatActor]))
         } yield Unit
         val (newCombat, _) = combatManip.run(combat).value
         newCombat.combatActors.length mustBe combat.combatActors.length +1
@@ -33,8 +37,12 @@ class CombatSpec extends UnitSpec with RandomDataGenerator{
           _ <- Combat.sortByInitiative(() => 1)
         } yield Unit
         val (newCombat, _) = combatManip.run(combat).value
+        val players = List(firstPlayer, midPlayer, lastPlayer)
         newCombat.combatActors.length mustBe combat.combatActors.length
-        newCombat.combatActors must contain allOf(firstPlayer, midPlayer, lastPlayer)
+        newCombat.combatActors.map(_.id) must contain theSameElementsAs players.map(_.id)
+        newCombat.combatActors.map(_.name) must contain theSameElementsAs players.map(_.name)
+        newCombat.combatActors.map(_.currentHealth) must contain theSameElementsAs players.map(_.currentHealth)
+        newCombat.combatActors.map(_.actor) must contain theSameElementsAs players.map(_.actor)
       }
     }
 
@@ -52,33 +60,33 @@ class CombatSpec extends UnitSpec with RandomDataGenerator{
 
     "updating players health" should {
       "update the health" in {
-        val newHealth = new CombatActor.Health(10)
+        val newHealth = CombatActor.Health(10)
         val combatManip = for{
           removed <- Combat.updateHealth(midPlayer, newHealth)
         } yield removed
         val (newCombat, removed) = combatManip.run(combat).value
         removed.length mustBe 0
-        newCombat.combatActors(1).hp mustBe newHealth
+        newCombat.combatActors(1).currentHealth mustBe newHealth
       }
       "remove the player if health drops to 0" in {
-        val newHealth = new CombatActor.Health(0)
+        val newHealth = CombatActor.Health(0)
         val combatManip = for{
           removed <- Combat.updateHealth(midPlayer, newHealth)
         } yield removed
 
         val (newCombat, removedPlayers) = combatManip.run(combat).value
         newCombat.combatActors mustNot contain(midPlayer)
-        removedPlayers mustBe List(midPlayer.copy(hp = newHealth))
+        removedPlayers mustBe List(midPlayer.copy(currentHealth = newHealth))
       }
       "remove the player if health drops below 0" in {
-        val newHealth = new CombatActor.Health(-5)
+        val newHealth = CombatActor.Health(-5)
         val combatManip = for{
           removed <- Combat.updateHealth(midPlayer, newHealth)
         } yield removed
 
         val (newCombat, removedPlayers) = combatManip.run(combat).value
         newCombat.combatActors mustNot contain(midPlayer)
-        removedPlayers mustBe List(midPlayer.copy(hp = newHealth))
+        removedPlayers mustBe List(midPlayer.copy(currentHealth = newHealth))
       }
     }
   }

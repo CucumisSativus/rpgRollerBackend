@@ -5,6 +5,7 @@ import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 trait CombatJsonSerializer extends DefaultJsonProtocol with CombatActorJsonFormats {
 
+  implicit val inCombatActorPresenterJson: RootJsonFormat[InCombatActorPresenter] = jsonFormat5(InCombatActorPresenter.apply)
   implicit val combatPresenterJson: RootJsonFormat[CombatPresenter] = jsonFormat2(CombatPresenter.apply)
 
   case class CreateCombatParameters(actorIds: List[String])

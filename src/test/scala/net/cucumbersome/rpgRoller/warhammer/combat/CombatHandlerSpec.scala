@@ -8,13 +8,13 @@ import akka.testkit.{TestKit, TestProbe}
 import akka.util.Timeout
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator
 import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler._
-import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
 import net.cucumbersome.test.DefaultTimeouts
 import org.scalatest.{MustMatchers, WordSpecLike}
 
 class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
   with WordSpecLike with MustMatchers with DefaultTimeouts with RandomDataGenerator{
-  import net.cucumbersome.test.CombatActorGenerator.arbitraryCombatActor
+
+  import net.cucumbersome.test.InCombatActorGenerator.arbitraryInCombatActor
 
   implicit val timeout: Timeout = Timeout(2, TimeUnit.SECONDS)
   "A combat handler" when {
@@ -53,7 +53,7 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
         val worker = buildWorker
         val id = generateId
 
-        val actor = random[CombatActor]
+        val actor = random[InCombatActor]
         val expectedCombat = Combat(List(actor))
 
         sender.send(worker, InitCombat(id, List(actor)))
@@ -72,7 +72,7 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
         val worker = buildWorker
         val id = generateId
 
-        val (initialActor, newActor) = random[CombatActor](2) match {
+        val (initialActor, newActor) = random[InCombatActor](2) match {
           case f :: s :: Nil => (f, s)
         }
 
@@ -93,7 +93,7 @@ class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
         val worker = buildWorker
         val id = generateId
 
-        val (firstActor, secondActor) = random[CombatActor](2) match {
+        val (firstActor, secondActor) = random[InCombatActor](2) match {
           case f :: s :: Nil => (f, s)
         }
 

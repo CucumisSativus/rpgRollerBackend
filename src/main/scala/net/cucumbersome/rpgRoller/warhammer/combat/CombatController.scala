@@ -60,14 +60,15 @@ class CombatController(commandGateway: ActorRef, actorRepository: ActorRepositor
 
     for {
       actors <- actorRepository.filter(FilterExpression.ByIds(actorIds))
-      response <- (commandGateway ? InitCombat(newId, actors)).mapTo[GetCombatResponse]
+      convertedActors = convertCombatActorsToInCombatActor(actors)
+      response <- (commandGateway ? InitCombat(newId, convertedActors)).mapTo[GetCombatResponse]
     } yield {
       CombatPresenter.combatToCombatPresenter(response.id, response.combat)
     }
   }
 
   private def removeActorsFromCombat(params: RemoveActorsFromCombatParameters): Future[CombatPresenter] = {
-    val actorIds = params.actorIds.map(new CombatActor.Id(_))
+    val actorIds = params.actorIds.map(InCombatActor.Id.apply)
     (commandGateway ? RemoveActors(params.combatId, actorIds)).mapTo[GetCombatResponse].
       map(r => CombatPresenter.combatToCombatPresenter(r.id, r.combat))
 
@@ -76,10 +77,16 @@ class CombatController(commandGateway: ActorRef, actorRepository: ActorRepositor
     val actorIds = params.actorIds
     for {
       actors <- actorRepository.filter(FilterExpression.ByIds(actorIds))
-      response <- (commandGateway ? AddActors(params.combatId, actors)).mapTo[GetCombatResponse]
+      convertedActors = convertCombatActorsToInCombatActor(actors)
+      response <- (commandGateway ? AddActors(params.combatId, convertedActors)).mapTo[GetCombatResponse]
     } yield {
       CombatPresenter.combatToCombatPresenter(response.id, response.combat)
     }
+  }
+
+  private def convertCombatActorsToInCombatActor(combatActors: List[CombatActor]): List[InCombatActor] = {
+    val actorIdGenerator = () => InCombatActor.Id(idGenerator.generateId)
+    combatActors.map(a => InCombatActor.buildFromCombatActor(a, idGenerator = actorIdGenerator))
   }
 }
 
