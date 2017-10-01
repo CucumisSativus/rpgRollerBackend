@@ -1,5 +1,6 @@
 package net.cucumbersome.test
 
+import net.cucumbersome.rpgRoller.warhammer.combat.InCombatActor
 import net.cucumbersome.rpgRoller.warhammer.player.{CombatActor, Statistics}
 import org.scalacheck.{Arbitrary, Gen}
 
@@ -41,7 +42,29 @@ object CombatActorGenerator {
       health <- Gen.choose(1, 20)
       name <- Gen.alphaNumStr
     } yield {
-      CombatActor(new CombatActor.Id(id.toString), new CombatActor.Name(name), stats, new CombatActor.Health(health))
+      CombatActor(CombatActor.Id(id.toString), CombatActor.Name(name), stats, CombatActor.Health(health))
     }
+  }
+}
+
+object InCombatActorGenerator {
+
+  import CombatActorGenerator._
+  import cats.syntax.option._
+
+  implicit val arbitraryInCombatActor: Arbitrary[InCombatActor] = Arbitrary {
+    for {
+      id <- Gen.uuid
+      name <- Gen.alphaStr
+      initiative <- Gen.choose(1, 20)
+      actor <- Arbitrary.arbitrary[CombatActor]
+    } yield InCombatActor(
+      InCombatActor.Id(id.toString),
+      InCombatActor.Name(name),
+      actor.hp,
+      InCombatActor.Initiative(initiative).some,
+      actor
+    )
+
   }
 }

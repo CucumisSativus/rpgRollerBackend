@@ -10,15 +10,15 @@ import net.cucumbersome.rpgRoller.warhammer.combat.CombatController.{CombatIdGen
 import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler.InitCombat
 import net.cucumbersome.rpgRoller.warhammer.combat.CombatJsonSerializer._
 import net.cucumbersome.rpgRoller.warhammer.infrastructure.CommandGateway
-import net.cucumbersome.rpgRoller.warhammer.player.{ActorRepository, CombatActor, CombatActorPresenter, InMemoryActorRepository}
+import net.cucumbersome.rpgRoller.warhammer.player.{ActorRepository, CombatActor, InMemoryActorRepository}
 import net.cucumbersome.test.MockedCombatIdGenerator
 import spray.json._
 
 class CombatControllerSpec extends RouteSpec {
   "A combat controller" when {
+    val expectedId = "myId:3"
+    val generator = MockedCombatIdGenerator(expectedId)
     "initializing new combat" should {
-      val expectedId = "myId:3"
-      val generator = MockedCombatIdGenerator(expectedId)
       "initialize it without any actors" in {
         val gateway = buildGateway
         val repository = new InMemoryActorRepository(List())
@@ -39,7 +39,9 @@ class CombatControllerSpec extends RouteSpec {
 
         val requestBody = CreateCombatParameters(actors.map(_.id.data)).toJson.compactPrint
         Get("/combat/new").withEntity(ContentTypes.`application/json`, requestBody) ~> route ~> check {
-          responseAs[String].parseJson mustBe CombatPresenter(expectedId, actors.map(CombatActorPresenter.fromCombatActor.get)).toJson
+          val inCombatActorPresenters = actors.map(a => InCombatActor.buildFromCombatActor(a, idGenerator = mockedActorIdGenerator(generator))).map(InCombatActorPresenter.fromInCombatActor.get)
+          val presenter = CombatPresenter(expectedId, inCombatActorPresenters)
+          responseAs[String].parseJson mustBe presenter.toJson
         }
       }
     }
@@ -53,11 +55,13 @@ class CombatControllerSpec extends RouteSpec {
 
         val requestBody = AddActorsToCombatParameters(combatId, List(actor3.id.data, actor4.id.data)).toJson.compactPrint
 
-        gateway ! InitCombat(combatId, List(actor1, actor2))
+        gateway ! InitCombat(combatId, List(actor1, actor2).map(a => InCombatActor.buildFromCombatActor(a, idGenerator = mockedActorIdGenerator(generator))))
 
-        val route = getRoute(gateway, repository)
+        val route = getRoute(gateway, repository, generator)
         Patch(s"/combat/$combatId/add-actors").withEntity(ContentTypes.`application/json`, requestBody) ~> route ~> check {
-          responseAs[String].parseJson mustBe CombatPresenter(combatId, actors.map(CombatActorPresenter.fromCombatActor.get)).toJson
+          val inCombatActorPresenters = actors.map(a => InCombatActor.buildFromCombatActor(a, idGenerator = mockedActorIdGenerator(generator))).map(InCombatActorPresenter.fromInCombatActor.get)
+          val presenter = CombatPresenter(combatId, inCombatActorPresenters)
+          responseAs[String].parseJson mustBe presenter.toJson
         }
 
       }
@@ -68,17 +72,20 @@ class CombatControllerSpec extends RouteSpec {
         val gateway = buildGateway
         val combatId = "combatId"
         val (actor1, actor2, actor3, actor4) = build4Actors
-        val actors = List(actor1, actor2, actor3, actor4)
-        val expectedAdtors = List(actor1, actor2)
+        val actors = List(actor1, actor2, actor3, actor4).map(a => InCombatActor.buildFromCombatActor(a))
+        val actorsWhichShouldBeKept = actors.take(2)
+        val actorsToBeRemoved = actors.diff(actorsWhichShouldBeKept)
         val repository = new InMemoryActorRepository(List(actor1, actor2, actor3, actor4))
 
-        val requestBody = RemoveActorsFromCombatParameters(combatId, List(actor3.id.data, actor4.id.data)).toJson.compactPrint
+        val requestBody = RemoveActorsFromCombatParameters(combatId, actorsToBeRemoved.map(_.id.data)).toJson.compactPrint
 
         gateway ! InitCombat(combatId, actors)
 
-        val route = getRoute(gateway, repository)
+        val route = getRoute(gateway, repository, generator)
         Patch(s"/combat/$combatId/remove-actors").withEntity(ContentTypes.`application/json`, requestBody) ~> route ~> check {
-          responseAs[String].parseJson mustBe CombatPresenter(combatId, expectedAdtors.map(CombatActorPresenter.fromCombatActor.get)).toJson
+          val inCombatActorPresenters = actorsWhichShouldBeKept.map(InCombatActorPresenter.fromInCombatActor.get)
+          val presenter = CombatPresenter(combatId, inCombatActorPresenters)
+          responseAs[String].parseJson mustBe presenter.toJson
         }
       }
     }
@@ -103,4 +110,6 @@ class CombatControllerSpec extends RouteSpec {
     val combatHandler = system.actorOf(CombatHandler.props(id), id)
     system.actorOf(CommandGateway.props(combatHandler))
   }
+
+  def mockedActorIdGenerator(idGenerator: MockedCombatIdGenerator): () => InCombatActor.Id = () => InCombatActor.Id(idGenerator.generateId)
 }

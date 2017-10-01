@@ -3,7 +3,6 @@ package net.cucumbersome.rpgRoller.warhammer.combat
 import akka.actor.{ActorLogging, ActorRef, Props}
 import akka.persistence.{PersistentActor, RecoveryCompleted}
 import cats.syntax.option._
-import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
 
 class CombatHandler(actorId: String) extends PersistentActor with ActorLogging {
 
@@ -59,21 +58,21 @@ object CombatHandler {
 
   sealed trait CombatEvent
 
-  case class CombatInitialized(id: String, actors: List[CombatActor]) extends CombatEvent
+  case class CombatInitialized(id: String, actors: List[InCombatActor]) extends CombatEvent
 
-  case class ActorsAdded(id: String, actors: List[CombatActor]) extends CombatEvent
+  case class ActorsAdded(id: String, actors: List[InCombatActor]) extends CombatEvent
 
-  case class ActorsRemoved(id: String, actorIds: List[CombatActor.Id]) extends CombatEvent
+  case class ActorsRemoved(id: String, actorIds: List[InCombatActor.Id]) extends CombatEvent
 
   sealed trait CombatCommand {
     def id: String
   }
 
-  case class InitCombat(id: String, actors: List[CombatActor]) extends CombatCommand
+  case class InitCombat(id: String, actors: List[InCombatActor]) extends CombatCommand
 
-  case class AddActors(id: String, actors: List[CombatActor]) extends CombatCommand
+  case class AddActors(id: String, actors: List[InCombatActor]) extends CombatCommand
 
-  case class RemoveActors(id: String, actors: List[CombatActor.Id]) extends CombatCommand
+  case class RemoveActors(id: String, actors: List[InCombatActor.Id]) extends CombatCommand
 
   case class GetCombat(id: String) extends CombatCommand
 
