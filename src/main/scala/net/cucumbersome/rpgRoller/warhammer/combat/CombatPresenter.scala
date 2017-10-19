@@ -1,13 +1,14 @@
 package net.cucumbersome.rpgRoller.warhammer.combat
 
+import io.swagger.annotations.{ApiModel, ApiModelProperty}
 import monocle.Iso
 import net.cucumbersome.rpgRoller.warhammer.player.{CombatActor, CombatActorPresenter}
 
-case class CombatPresenter(id: String, actors: List[InCombatActorPresenter])
+case class CombatPresenter(id: String, actors: Array[InCombatActorPresenter])
 
 object CombatPresenter {
   lazy val combatToCombatPresenter: (String, Combat) => CombatPresenter = (id: String, c: Combat) => {
-    CombatPresenter(id, c.combatActors.map(InCombatActorPresenter.fromInCombatActor.get))
+    CombatPresenter(id, c.combatActors.map(InCombatActorPresenter.fromInCombatActor.get).toArray)
   }
 }
 

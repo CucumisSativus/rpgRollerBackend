@@ -19,6 +19,10 @@ scalacOptions ++= Seq(
   "-language:implicitConversions"
 )
 
+javaOptions ++= Seq(
+  "--add-modules java.xml.bind"
+)
+
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-persistence" % akkaVersion,
@@ -37,6 +41,9 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "cats" % "0.9.0",
   "org.scalatest" %% "scalatest" % "3.0.1" % "test",
   "com.danielasfregola" %% "random-data-generator" % "2.0",
-  "com.typesafe" % "config" % "1.3.1"
+  "com.typesafe" % "config" % "1.3.1",
+  "ch.megard" %% "akka-http-cors" % "0.2.1",
+  "com.github.swagger-akka-http" %% "swagger-akka-http" % "0.11.0",
+  "org.slf4j" % "slf4j-simple" % "1.7.25"
 )
         

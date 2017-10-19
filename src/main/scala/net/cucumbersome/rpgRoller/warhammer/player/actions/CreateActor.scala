@@ -14,6 +14,6 @@ object CreateActor {
 
 }
 
-trait CommandResult
+sealed trait CommandResult
 case object Ok extends CommandResult
 case class CommandFailed(errors: List[String]) extends CommandResult

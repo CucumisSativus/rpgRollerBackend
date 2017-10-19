@@ -5,6 +5,9 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import net.cucumbersome.rpgRoller.warhammer.player.{ActorsController, CombatActor, InMemoryActorRepository, Statistics}
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActorConversions._
+import net.cucumbersome.rpgRoller.warhammer.swagger.SwaggerDocService
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
+import akka.http.scaladsl.server.Directives._
 object Main {
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem("rpgRoller")
@@ -18,7 +21,9 @@ object Main {
     val port = conf.getInt("port")
     val domain = conf.getString("domain")
 
-    Http().bindAndHandle(controller.route, domain, port)
+    val swaggerService = new SwaggerDocService(domain, port)
+    val routes =  cors()(controller.route ~ swaggerService.routes)
+    Http().bindAndHandle(routes, domain, port)
 
   }
 
