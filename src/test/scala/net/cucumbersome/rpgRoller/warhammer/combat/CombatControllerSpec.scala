@@ -24,9 +24,9 @@ class CombatControllerSpec extends RouteSpec {
         val repository = new InMemoryActorRepository(List())
         val route = getRoute(gateway, repository, generator)
 
-        val requestBody = CreateCombatParameters(List()).toJson.compactPrint
-        Get("/combat/new").withEntity(ContentTypes.`application/json`, requestBody) ~> route ~> check {
-          responseAs[String].parseJson mustBe CombatPresenter(expectedId, List()).toJson
+        val requestBody = CreateCombatParameters(Array()).toJson.compactPrint
+        Post("/combat").withEntity(ContentTypes.`application/json`, requestBody) ~> route ~> check {
+          responseAs[String].parseJson mustBe CombatPresenter(expectedId, Array()).toJson
         }
 
       }
@@ -37,10 +37,10 @@ class CombatControllerSpec extends RouteSpec {
         val repository = new InMemoryActorRepository(actors)
         val route = getRoute(gateway, repository, generator)
 
-        val requestBody = CreateCombatParameters(actors.map(_.id.data)).toJson.compactPrint
-        Get("/combat/new").withEntity(ContentTypes.`application/json`, requestBody) ~> route ~> check {
+        val requestBody = CreateCombatParameters(actors.map(_.id.data).toArray).toJson.compactPrint
+        Post("/combat").withEntity(ContentTypes.`application/json`, requestBody) ~> route ~> check {
           val inCombatActorPresenters = actors.map(a => InCombatActor.buildFromCombatActor(a, idGenerator = mockedActorIdGenerator(generator))).map(InCombatActorPresenter.fromInCombatActor.get)
-          val presenter = CombatPresenter(expectedId, inCombatActorPresenters)
+          val presenter = CombatPresenter(expectedId, inCombatActorPresenters.toArray)
           responseAs[String].parseJson mustBe presenter.toJson
         }
       }
@@ -53,14 +53,14 @@ class CombatControllerSpec extends RouteSpec {
         val actors = List(actor1, actor2, actor3, actor4)
         val repository = new InMemoryActorRepository(List(actor1, actor2, actor3, actor4))
 
-        val requestBody = AddActorsToCombatParameters(combatId, List(actor3.id.data, actor4.id.data)).toJson.compactPrint
+        val requestBody = AddActorsToCombatParameters(Array(actor3.id.data, actor4.id.data)).toJson.compactPrint
 
         gateway ! InitCombat(combatId, List(actor1, actor2).map(a => InCombatActor.buildFromCombatActor(a, idGenerator = mockedActorIdGenerator(generator))))
 
         val route = getRoute(gateway, repository, generator)
         Patch(s"/combat/$combatId/add-actors").withEntity(ContentTypes.`application/json`, requestBody) ~> route ~> check {
           val inCombatActorPresenters = actors.map(a => InCombatActor.buildFromCombatActor(a, idGenerator = mockedActorIdGenerator(generator))).map(InCombatActorPresenter.fromInCombatActor.get)
-          val presenter = CombatPresenter(combatId, inCombatActorPresenters)
+          val presenter = CombatPresenter(combatId, inCombatActorPresenters.toArray)
           responseAs[String].parseJson mustBe presenter.toJson
         }
 
@@ -77,14 +77,14 @@ class CombatControllerSpec extends RouteSpec {
         val actorsToBeRemoved = actors.diff(actorsWhichShouldBeKept)
         val repository = new InMemoryActorRepository(List(actor1, actor2, actor3, actor4))
 
-        val requestBody = RemoveActorsFromCombatParameters(combatId, actorsToBeRemoved.map(_.id.data)).toJson.compactPrint
+        val requestBody = RemoveActorsFromCombatParameters(actorsToBeRemoved.map(_.id.data).toArray).toJson.compactPrint
 
         gateway ! InitCombat(combatId, actors)
 
         val route = getRoute(gateway, repository, generator)
         Patch(s"/combat/$combatId/remove-actors").withEntity(ContentTypes.`application/json`, requestBody) ~> route ~> check {
           val inCombatActorPresenters = actorsWhichShouldBeKept.map(InCombatActorPresenter.fromInCombatActor.get)
-          val presenter = CombatPresenter(combatId, inCombatActorPresenters)
+          val presenter = CombatPresenter(combatId, inCombatActorPresenters.toArray)
           responseAs[String].parseJson mustBe presenter.toJson
         }
       }
