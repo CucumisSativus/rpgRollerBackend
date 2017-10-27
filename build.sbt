@@ -7,7 +7,7 @@ scalaVersion := "2.12.1"
 resolvers += Resolver.sonatypeRepo("releases")
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
-
+enablePlugins(DockerPlugin, JavaAppPackaging)
 scalacOptions ++= Seq(
   "-feature",
   "-language:postfixOps",
@@ -77,3 +77,4 @@ lazy val monocleDependcencies = Seq(
   "com.github.julien-truffaut" %%  "monocle-macro" % monocleVersion,
   "com.github.julien-truffaut" %%  "monocle-law"   % monocleVersion % "test"
 )
+
