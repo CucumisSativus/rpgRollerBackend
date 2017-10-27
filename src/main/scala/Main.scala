@@ -3,11 +3,12 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import net.cucumbersome.rpgRoller.warhammer.player.{ActorsController, CombatActor, InMemoryActorRepository, Statistics}
+import net.cucumbersome.rpgRoller.warhammer.player.{ActorsController, CombatActor, Statistics}
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActorConversions._
 import net.cucumbersome.rpgRoller.warhammer.swagger.SwaggerDocService
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
 import akka.http.scaladsl.server.Directives._
+import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.InMemoryActorRepository
 object Main {
   def main(args: Array[String]): Unit = {
     implicit val system = ActorSystem("rpgRoller")

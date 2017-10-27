@@ -1,9 +1,10 @@
-package net.cucumbersome.rpgRoller.warhammer.player
+package net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator
 import net.cucumbersome.UnitSpec
+import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.ActorRepository.FilterExpression
 import net.cucumbersome.rpgRoller.warhammer.player
-import net.cucumbersome.rpgRoller.warhammer.player.ActorRepository.FilterExpression
+import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
 
 class ActorRepositorySpec extends UnitSpec with RandomDataGenerator {
 

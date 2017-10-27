@@ -10,7 +10,8 @@ import net.cucumbersome.rpgRoller.warhammer.combat.CombatController.{CombatIdGen
 import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler.InitCombat
 import net.cucumbersome.rpgRoller.warhammer.combat.CombatJsonSerializer._
 import net.cucumbersome.rpgRoller.warhammer.infrastructure.CommandGateway
-import net.cucumbersome.rpgRoller.warhammer.player.{ActorRepository, CombatActor, InMemoryActorRepository}
+import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.{ActorRepository, InMemoryActorRepository}
+import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
 import net.cucumbersome.test.MockedCombatIdGenerator
 import spray.json._
 
