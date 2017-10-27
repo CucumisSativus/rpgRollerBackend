@@ -14,8 +14,9 @@ import io.swagger.annotations.{Api, ApiImplicitParam, ApiImplicitParams, ApiOper
 import net.cucumbersome.rpgRoller.warhammer.combat.CombatController.{CombatIdGenerator, DefaultIdGenerator}
 import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler.{AddActors, GetCombatResponse, InitCombat, RemoveActors}
 import net.cucumbersome.rpgRoller.warhammer.combat.CombatJsonSerializer._
-import net.cucumbersome.rpgRoller.warhammer.player.ActorRepository.FilterExpression
-import net.cucumbersome.rpgRoller.warhammer.player.{ActorRepository, CombatActor}
+import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.ActorRepository
+import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.ActorRepository.FilterExpression
+import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -1,8 +1,9 @@
 package net.cucumbersome.rpgRoller.warhammer.player.actions
 
 import cats.data.Validated.{Invalid, Valid}
+import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.ActorRepository
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActorValidator.validate
-import net.cucumbersome.rpgRoller.warhammer.player.{ActorRepository, CombatActorPresenter}
+import net.cucumbersome.rpgRoller.warhammer.player.CombatActorPresenter
 
 import scala.concurrent.{ExecutionContext, Future}
 object CreateActor {

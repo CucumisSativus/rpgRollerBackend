@@ -11,6 +11,7 @@ import net.cucumbersome.rpgRoller.warhammer.player.actions.{CommandFailed, Creat
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
 import io.swagger.annotations._
+import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.ActorRepository
 
 @Api(value = "/actors", produces = "application/json")
 @Path("/actors")

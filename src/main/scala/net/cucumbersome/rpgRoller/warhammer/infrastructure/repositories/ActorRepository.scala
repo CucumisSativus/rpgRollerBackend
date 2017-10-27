@@ -1,8 +1,9 @@
-package net.cucumbersome.rpgRoller.warhammer.player
+package net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories
 
 import akka.Done
-import net.cucumbersome.rpgRoller.warhammer.player.ActorRepository.FilterExpression
-import net.cucumbersome.rpgRoller.warhammer.player.ActorRepository.FilterExpression._
+import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.ActorRepository.FilterExpression
+import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.ActorRepository.FilterExpression._
+import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
 
 import scala.concurrent.{ExecutionContext, Future}
 trait ActorRepository {

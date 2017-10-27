@@ -4,6 +4,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator
 import net.cucumbersome.UnitSpec
+import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.InMemoryActorRepository
 import net.cucumbersome.rpgRoller.warhammer.player
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActorPresenter.fromCombatActor
 import net.cucumbersome.test.CombatActorGenerator.arbitraryCombatActor
