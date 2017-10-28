@@ -2,6 +2,7 @@ package net.cucumbersome.rpgRoller.warhammer.player
 
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActor.{Health, Id, Name}
 
+
 case class CombatActor(id: Id, name: Name, statistics: Statistics, hp: Health)
 
 object CombatActor{

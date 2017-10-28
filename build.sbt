@@ -28,7 +28,8 @@ libraryDependencies ++=
   loggingDependencies ++
   akkaDependencies ++
   akkaHttpDependencies ++
-  monocleDependcencies
+  monocleDependcencies ++
+  persistanceDependencies
 
 
 lazy val configDependencies = Seq(
@@ -44,7 +45,8 @@ lazy val documentationDependencies = Seq(
 
 lazy val testDependencies = Seq(
   "org.scalatest" %% "scalatest" % "3.0.1" % "test",
-  "com.danielasfregola" %% "random-data-generator" % "2.0"
+  "com.danielasfregola" %% "random-data-generator" % "2.0" % "test",
+  "com.github.fakemongo" % "fongo" % "2.1.0" % "test"
 )
 lazy val loggingDependencies = Seq(
   "ch.qos.logback" % "logback-classic" % "1.2.3",
@@ -76,5 +78,10 @@ lazy val monocleDependcencies = Seq(
   "com.github.julien-truffaut" %%  "monocle-core"  % monocleVersion,
   "com.github.julien-truffaut" %%  "monocle-macro" % monocleVersion,
   "com.github.julien-truffaut" %%  "monocle-law"   % monocleVersion % "test"
+)
+
+lazy val persistanceDependencies = Seq(
+  "org.mongodb" % "mongodb-driver" % "3.5.0",
+  "org.mongodb.scala" %% "mongo-scala-driver" % "2.1.0"
 )
 

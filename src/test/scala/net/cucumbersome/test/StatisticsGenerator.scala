@@ -1,6 +1,7 @@
 package net.cucumbersome.test
 
 import net.cucumbersome.rpgRoller.warhammer.combat.InCombatActor
+import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.MongoDbActorRepository.DatabaseActor
 import net.cucumbersome.rpgRoller.warhammer.player.{CombatActor, Statistics}
 import org.scalacheck.{Arbitrary, Gen}
 
@@ -66,5 +67,39 @@ object InCombatActorGenerator {
       actor
     )
 
+  }
+}
+
+object DatabaseActorGenerator {
+  implicit val arbitraryDatabaseActor : Arbitrary[DatabaseActor] = Arbitrary {
+    for{
+      actorId <- Gen.uuid
+      actorName <- Gen.alphaStr
+      hp <- Gen.choose(1, 20)
+      ws <- Gen.choose(1, 100)
+      bs <- Gen.choose(1, 100)
+      str <- Gen.choose(1, 100)
+      tg <- Gen.choose(1, 100)
+      ag <- Gen.choose(1, 100)
+      int <- Gen.choose(1, 100)
+      per <- Gen.choose(1, 100)
+      wp <- Gen.choose(1, 100)
+      fel <- Gen.choose(1, 100)
+      infl <- Gen.choose(1, 100)
+    } yield DatabaseActor(
+      actorId = actorId.toString,
+      actorName = actorName,
+      hp = hp,
+      weaponsSkill = ws,
+      ballisticSkill = bs,
+      strength = str,
+      toughness = tg,
+      agility = ag,
+      intelligence = int,
+      perception = per,
+      willPower = wp,
+      fellowship = fel,
+      influence = infl
+    )
   }
 }
