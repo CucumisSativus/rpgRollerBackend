@@ -6,7 +6,9 @@
     </appender>
 
     <logger name="io.swagger" level="INFO"/>
-
+    <logger name="com.mongodb.FongoDBCollection" level="INFO"/>
+    <logger name="com.github.fakemongo" level="WARN"/>
+    
     <root level="debug">
         <appender-ref ref="STDOUT" />
     </root>

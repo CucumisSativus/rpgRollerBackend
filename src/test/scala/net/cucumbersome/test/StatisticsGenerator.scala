@@ -6,7 +6,7 @@ import net.cucumbersome.rpgRoller.warhammer.player.{CombatActor, Statistics}
 import org.scalacheck.{Arbitrary, Gen}
 
 object StatisticsGenerator {
-  implicit val arbitraryPlayer: Arbitrary[Statistics] = Arbitrary {
+  implicit val arbitraryStatistics: Arbitrary[Statistics] = Arbitrary {
     for{
       ws <- Gen.choose(0 ,100)
       bs <- Gen.choose(0 ,100)
@@ -34,12 +34,12 @@ object StatisticsGenerator {
 }
 
 object CombatActorGenerator {
-  import StatisticsGenerator.arbitraryPlayer
+  import StatisticsGenerator.arbitraryStatistics
 
   implicit val arbitraryCombatActor: Arbitrary[CombatActor] = Arbitrary{
     for {
       id <- Gen.uuid
-      stats <- Arbitrary.arbitrary[Statistics]
+      stats <- Arbitrary.arbitrary[Statistics](arbitraryStatistics)
       health <- Gen.choose(1, 20)
       name <- Gen.alphaNumStr
     } yield {
@@ -58,7 +58,7 @@ object InCombatActorGenerator {
       id <- Gen.uuid
       name <- Gen.alphaStr
       initiative <- Gen.choose(1, 20)
-      actor <- Arbitrary.arbitrary[CombatActor]
+      actor <- Arbitrary.arbitrary[CombatActor](arbitraryCombatActor)
     } yield InCombatActor(
       InCombatActor.Id(id.toString),
       InCombatActor.Name(name),

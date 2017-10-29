@@ -1,6 +1,7 @@
 package net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories
 
 import akka.Done
+import cats.Functor
 import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.ActorRepository.FilterExpression
 import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.MongoDbActorRepository.DatabaseActor
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
@@ -9,15 +10,25 @@ import net.cucumbersome.rpgRoller.warhammer.player.Statistics
 import scala.concurrent.{ExecutionContext, Future}
 import org.mongodb.scala._
 import org.mongodb.scala.bson.ObjectId
-
+import cats.implicits._
 class MongoDbActorRepository(collection: MongoCollection[DatabaseActor]) extends ActorRepository {
 
   import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.MongoDbActorRepository._
 
   override def all(implicit ec: ExecutionContext): Future[List[CombatActor]] =
-    collection.find().map(databaseActorToComatActor).toFuture().map(_.toList)
+    collection
+      .find()
+      .map(databaseActorToComatActor)
+      .toFuture()
+      .map(_.toList)
 
-  override def find(id: CombatActor.Id)(implicit ec: ExecutionContext): Future[Option[CombatActor]] = ???
+  override def find(id: CombatActor.Id)(implicit ec: ExecutionContext): Future[Option[CombatActor]] =
+    collection.
+      find(Document("actorId" -> id.data))
+      .first()
+      .head()
+      .map(Option.apply)
+      .map(Functor[Option].lift(databaseActorToComatActor))
 
   override def add(combatActor: CombatActor)(implicit ec: ExecutionContext): Future[Done] = ???
 
