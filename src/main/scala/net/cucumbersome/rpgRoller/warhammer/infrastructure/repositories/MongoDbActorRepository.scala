@@ -11,6 +11,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import org.mongodb.scala._
 import org.mongodb.scala.bson.ObjectId
 import cats.implicits._
+import org.mongodb.scala.model.Filters._
 class MongoDbActorRepository(collection: MongoCollection[DatabaseActor]) extends ActorRepository {
 
   import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.MongoDbActorRepository._
@@ -30,9 +31,25 @@ class MongoDbActorRepository(collection: MongoCollection[DatabaseActor]) extends
       .map(Option.apply)
       .map(Functor[Option].lift(databaseActorToComatActor))
 
-  override def add(combatActor: CombatActor)(implicit ec: ExecutionContext): Future[Done] = ???
+  override def add(combatActor: CombatActor)(implicit ec: ExecutionContext): Future[Done] =
+    collection
+      .insertOne(combatActorToDatabaseActor(combatActor))
+      .head()
+      .map(_ => Done)
 
-  override def filter(expression: FilterExpression)(implicit ec: ExecutionContext): Future[List[CombatActor]] = ???
+
+  override def filter(expression: FilterExpression)(implicit ec: ExecutionContext): Future[List[CombatActor]] = expression match{
+    case FilterExpression.ByIds(ids) => filterByIds(ids)
+    case expr => throw new Exception(s"${expr} is not supported yet")
+  }
+
+  private def filterByIds(ids: Seq[String])(implicit ec: ExecutionContext) = {
+    collection
+        .find()
+          .filter(in("actorId", ids : _*))
+          .toFuture()
+          .map(_.map(databaseActorToComatActor).toList)
+  }
 }
 
 object MongoDbActorRepository {
@@ -103,6 +120,22 @@ object MongoDbActorRepository {
         fellowship = db.fellowship.toFel,
         influence = db.influence.toInfl
       )
+    )
 
+  private[repositories] def combatActorToDatabaseActor(ac: CombatActor): DatabaseActor =
+    DatabaseActor(
+      actorId = ac.id.data,
+      actorName = ac.name.data,
+      hp = ac.hp.data,
+      weaponsSkill = ac.statistics.weaponSkill.data,
+      ballisticSkill = ac.statistics.ballisticSkill.data,
+      strength = ac.statistics.strength.data,
+      toughness = ac.statistics.toughness.data,
+      agility = ac.statistics.agility.data,
+      intelligence = ac.statistics.intelligence.data,
+      perception = ac.statistics.perception.data,
+      willPower = ac.statistics.willPower.data,
+      fellowship = ac.statistics.fellowship.data,
+      influence = ac.statistics.influence.data
     )
 }

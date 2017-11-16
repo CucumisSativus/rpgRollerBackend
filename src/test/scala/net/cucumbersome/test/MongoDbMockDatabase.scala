@@ -6,6 +6,7 @@ import org.bson.codecs.configuration.CodecRegistries._
 import org.mongodb.scala.{Document, MongoCollection, MongoDatabase}
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.bson.codecs.Macros._
+import org.mongodb.scala.model.IndexOptions
 import org.scalatest.{Suite, SuiteMixin}
 
 import scala.reflect.ClassTag
@@ -15,6 +16,7 @@ trait MongoDbMockDatabase extends SuiteMixin{ this: Suite =>
     val _db = fongo.getDatabase("mongo-database")
     val registry = fromRegistries(fromProviders(classOf[DatabaseActor]), DEFAULT_CODEC_REGISTRY)
     val col = MongoCollection[T](_db.withCodecRegistry(registry).getCollection("col", c))
+    col.createIndex(Document("user_id" ->1 ), IndexOptions().unique(true) )
     try{
       f(col)
     } finally {
