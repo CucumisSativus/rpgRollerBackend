@@ -92,11 +92,12 @@ class MongoDbActorRepositorySpec extends UnitSpec with MongoDbMockDatabase with 
         val databaseActors = random[DatabaseActor](3).sortBy(_.actorId)
         futureValue(col.insertMany(databaseActors).toFuture())
 
-        val obtainedActors = futureValue(repository.filter(FilterExpression.ByIds(databaseActors.map(_.actorId)))).sortBy(_.id.data)
+        val obtainedActors = futureValue(repository.filter(FilterExpression.ByIds(databaseActors.tail.map(_.actorId)))).sortBy(_.id.data)
 
-        obtainedActors(0) must beTheSameAsDatabaseActor(databaseActors(0))
-        obtainedActors(1) must beTheSameAsDatabaseActor(databaseActors(1))
-        obtainedActors(2) must beTheSameAsDatabaseActor(databaseActors(2))
+        obtainedActors.size mustBe 2
+
+        obtainedActors(0) must beTheSameAsDatabaseActor(databaseActors(1))
+        obtainedActors(1) must beTheSameAsDatabaseActor(databaseActors(2))
       }
     }
   }

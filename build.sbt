@@ -20,6 +20,8 @@ javaOptions ++= Seq(
   "--add-modules java.xml.bind"
 )
 
+javaOptions in Universal ++= Seq("-Dconfig.file=/roller-conf/application.conf", "--add-modules java.xml.bind")
+
 libraryDependencies ++=
   configDependencies ++
   catsDependencies ++
@@ -46,7 +48,8 @@ lazy val documentationDependencies = Seq(
 lazy val testDependencies = Seq(
   "org.scalatest" %% "scalatest" % "3.0.1" % "test",
   "com.danielasfregola" %% "random-data-generator" % "2.0" % "test",
-  "com.github.fakemongo" % "fongo" % "2.1.0" % "test"
+  "com.github.fakemongo" % "fongo" % "2.1.0" % "test",
+  "org.mongodb" % "mongodb-driver" % "3.5.0" % "test"//for fongo
 )
 lazy val loggingDependencies = Seq(
   "ch.qos.logback" % "logback-classic" % "1.2.3",
@@ -81,7 +84,11 @@ lazy val monocleDependcencies = Seq(
 )
 
 lazy val persistanceDependencies = Seq(
-  "org.mongodb" % "mongodb-driver" % "3.5.0",
-  "org.mongodb.scala" %% "mongo-scala-driver" % "2.1.0"
+  "org.mongodb" % "mongodb-driver-async" % "3.5.0",
+  "org.mongodb.scala" %% "mongo-scala-driver" % "2.1.0",
+  "org.mongodb.scala" %% "mongo-scala-bson" % "2.1.0",
+  "org.reactivemongo" %% "reactivemongo" % "0.12.7",
+  "org.reactivemongo" %% "reactivemongo-akkastream" % "0.12.7",
+  "com.github.scullxbones" %% "akka-persistence-mongo-rxmongo" % "2.0.4"
 )
 
