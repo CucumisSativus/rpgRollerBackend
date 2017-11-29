@@ -16,7 +16,7 @@ trait MongoDbMockDatabase extends SuiteMixin{ this: Suite =>
     val _db = fongo.getDatabase("mongo-database")
     val registry = fromRegistries(fromProviders(classOf[DatabaseActor]), DEFAULT_CODEC_REGISTRY)
     val col = MongoCollection[T](_db.withCodecRegistry(registry).getCollection("col", c))
-    col.createIndex(Document("user_id" ->1 ), IndexOptions().unique(true) )
+    col.createIndex(Document("actorId" ->1 ), IndexOptions().unique(true) )
     try{
       f(col)
     } finally {

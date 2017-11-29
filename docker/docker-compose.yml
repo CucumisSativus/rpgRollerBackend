@@ -1,6 +1,21 @@
-version: '3'
+version: '3.3'
 services:
   roller:
     image: ${ROLLER_IMAGE}
     ports:
     - "8080:8080"
+    links:
+    - mongo
+    volumes:
+    - "./conf:/roller-conf/"
+  mongo:
+    image: mongo:latest
+    ports:
+    - "27017:27017"
+  mongo-seed:
+    build: ./mongo-seed
+    links:
+    - mongo
+configs:
+  roller-conf:
+    file: ./conf/application.conf

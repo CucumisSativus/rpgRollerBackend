@@ -1,17 +1,22 @@
 import akka.actor.ActorSystem
-import com.typesafe.config.Config
-import com.typesafe.config.ConfigFactory
 import akka.http.scaladsl.Http
-import akka.stream.ActorMaterializer
-import net.cucumbersome.rpgRoller.warhammer.player.{ActorsController, CombatActor, Statistics}
-import net.cucumbersome.rpgRoller.warhammer.player.CombatActorConversions._
-import net.cucumbersome.rpgRoller.warhammer.swagger.SwaggerDocService
-import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
 import akka.http.scaladsl.server.Directives._
+import akka.stream.ActorMaterializer
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
+import com.mongodb.event.{ClusterClosedEvent, ClusterDescriptionChangedEvent, ClusterListener, ClusterOpeningEvent}
+import com.typesafe.config.{Config, ConfigFactory}
 import net.cucumbersome.rpgRoller.warhammer.combat.{CombatController, CombatHandler}
 import net.cucumbersome.rpgRoller.warhammer.infrastructure.CommandGateway
-import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.InMemoryActorRepository
+import net.cucumbersome.rpgRoller.warhammer.infrastructure.mongo.CollectionBuilder
+import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.{ActorRepository, MongoDbActorRepository}
+import net.cucumbersome.rpgRoller.warhammer.player.ActorsController
+import net.cucumbersome.rpgRoller.warhammer.swagger.SwaggerDocService
+import org.mongodb.scala.connection.ClusterSettings
+import org.mongodb.scala.{MongoClient, MongoClientSettings, ServerAddress}
 import org.slf4j.LoggerFactory
+
+import collection.JavaConverters._
+
 object Main {
   def main(args: Array[String]): Unit = {
     val logger = LoggerFactory.getLogger(getClass)
@@ -21,7 +26,7 @@ object Main {
     implicit val ec = system.dispatcher
     val config = ConfigFactory.load
 
-    val repo = new InMemoryActorRepository(initialCombatActors)
+    val repo = initializeActorsRepository(config)
     val actorsController = new ActorsController(repo)
     logger.info("Initialized actors controller")
 
@@ -37,46 +42,36 @@ object Main {
     val swaggerService = new SwaggerDocService(domain, port)
     logger.info("initialized swagger service")
 
-    val routes =  cors()(combatController.route ~ actorsController.route ~ swaggerService.routes)
+    val routes = cors()(combatController.route ~ actorsController.route ~ swaggerService.routes)
     logger.info("application ready!")
 
     Http().bindAndHandle(routes, domain, port)
   }
 
-  def initialCombatActors: List[CombatActor] = List(
-    CombatActor(
-      id = new CombatActor.Id("1"),
-      name = new CombatActor.Name("Player 1"),
-      hp = new CombatActor.Health(10),
-      statistics = Statistics(
-        1.toWs,
-        2.toBs,
-        3.toStr,
-        4.toTg,
-        5.toAg,
-        6.toIt,
-        7.toPer,
-        8.toWp,
-        9.toFel,
-        10.toInfl
-      )
-    ),
-     CombatActor(
-      id = new CombatActor.Id("2"),
-      name = new CombatActor.Name("Player 2"),
-      hp = new CombatActor.Health(20),
-      statistics = Statistics(
-        2.toWs,
-        3.toBs,
-        4.toStr,
-        5.toTg,
-        6.toAg,
-        7.toIt,
-        8.toPer,
-        9.toWp,
-        10.toFel,
-        11.toInfl
-      )
-    )
-  )
+  def initializeActorsRepository(config: Config): ActorRepository = {
+    val mongoUri = config.getString("mongo.uri")
+    val mongoDatabaseName = config.getString("mongo.database")
+    val mongoClient = MongoClient(mongoUri)
+    val database = mongoClient.getDatabase(mongoDatabaseName)
+    val actorCollection = CollectionBuilder.buildActorsCollection(database)
+    new MongoDbActorRepository(actorCollection)
+  }
+
+
+  case object MongoClusetListener extends ClusterListener {
+    val logger = LoggerFactory.getLogger(getClass)
+
+    override def clusterOpening(event: ClusterOpeningEvent): Unit = {
+      logger.info(s"Cluster opened $event")
+    }
+
+    override def clusterClosed(event: ClusterClosedEvent): Unit = {
+      logger.info(s"Cluster close $event")
+    }
+
+    override def clusterDescriptionChanged(event: ClusterDescriptionChangedEvent): Unit = {
+      logger.info(s"Cluster description changed $event")
+    }
+  }
+
 }
