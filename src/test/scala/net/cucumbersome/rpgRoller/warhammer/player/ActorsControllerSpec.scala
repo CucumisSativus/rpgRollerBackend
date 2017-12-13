@@ -27,13 +27,13 @@ class ActorsControllerSpec extends UnitSpec with ScalatestRouteTest with RandomD
         )
       }
       "return one actor" in {
-        Get(s"/actor/${actor1.id.data}") ~> routes ~> check(
+        Get(s"/actors/${actor1.id.data}") ~> routes ~> check(
           responseAs[String].parseJson mustBe convertActorToPresenter(actor1).toJson
         )
       }
 
       "return 404 if no actor is found" in {
-        Get(s"/actor/not_existing") ~> routes ~> check(
+        Get(s"/actors/not_existing") ~> routes ~> check(
           response.status mustBe StatusCodes.NotFound
         )
       }
