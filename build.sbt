@@ -34,7 +34,7 @@ javaOptions in Universal ++= Seq(
 )
 
 libraryDependencies ++= backendDepencencies
-
+version in Docker := "snapshot"
 
 
 

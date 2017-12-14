@@ -3,5 +3,16 @@ scala:
   - 2.12.4
 jdk:
   - oraclejdk8
+
+services:
+  - docker
+
+env:
+  -ROLLER_IMAGE=rpgroller:snapshot
+
 script:
  - sbt backend/test
+ - sbt backend/docker:publishLocal
+ - docker-compose -f docker/docker-compose.yml build
+ - cd docker && sh start_application.sh && cd -
+ - sbt functional/test
