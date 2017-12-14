@@ -10,9 +10,15 @@ services:
 env:
   -ROLLER_IMAGE=rpgroller:snapshot
 
-script:
- - sbt backend/test
- - sbt backend/docker:publishLocal
- - docker-compose -f docker/docker-compose.yml build
- - cd docker && sh start_application.sh && cd -
- - sbt functional/test
+jobs:
+  include:
+    - stage: unit test
+      script: sbt backend/test
+    - stage: dockerize
+      script:
+        - sbt backend/docker:publishLocal
+        - docker-compose -f docker/docker-compose.yml build
+    - stage: functional tests
+      script:
+        - cd docker && sh start_application.sh && cd -
+        - sbt functional/test
