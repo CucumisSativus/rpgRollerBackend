@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit
 import javax.ws.rs.Path
 
 import akka.actor.ActorRef
+import akka.event.Logging
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
@@ -40,10 +41,12 @@ class CombatController(commandGateway: ActorRef, actorRepository: ActorRepositor
       dataTypeClass = classOf[CreateCombatParameters], paramType = "body")
   ))
   def createCombatRoute: Route = pathEndOrSingleSlash {
-    post {
-      entity(as[CreateCombatParameters]) { combat =>
-        completeOrRecoverWith(createCombat(combat)) { ex =>
-          failWith(ex)
+    logRequest(s"create new combat", Logging.InfoLevel) {
+      post {
+        entity(as[CreateCombatParameters]) { combat =>
+          completeOrRecoverWith(createCombat(combat)) { ex =>
+            failWith(ex)
+          }
         }
       }
     }
@@ -58,10 +61,12 @@ class CombatController(commandGateway: ActorRef, actorRepository: ActorRepositor
       dataType = "string", paramType = "path")
   ))
   def addActorsRoute: Route = path(Segment / "add-actors"){ combatId =>
-    patch {
-      entity(as[AddActorsToCombatParameters]) { params =>
-        completeOrRecoverWith(addActorsToCombat(combatId, params)) { ex =>
-          failWith(ex)
+    logRequest(s"add actor to combat ${combatId}", Logging.InfoLevel) {
+      patch {
+        entity(as[AddActorsToCombatParameters]) { params =>
+          completeOrRecoverWith(addActorsToCombat(combatId, params)) { ex =>
+            failWith(ex)
+          }
         }
       }
     }
@@ -76,10 +81,12 @@ class CombatController(commandGateway: ActorRef, actorRepository: ActorRepositor
       dataType = "string", paramType = "path")
   ))
   def removeActorsRoute: Route = path(Segment / "remove-actors") { combatId =>
-    patch {
-      entity(as[RemoveActorsFromCombatParameters]) { params =>
-        completeOrRecoverWith(removeActorsFromCombat(combatId, params)) { ex =>
-          failWith(ex)
+    logRequest(s"remove actor from combat ${combatId}", Logging.InfoLevel) {
+      patch {
+        entity(as[RemoveActorsFromCombatParameters]) { params =>
+          completeOrRecoverWith(removeActorsFromCombat(combatId, params)) { ex =>
+            failWith(ex)
+          }
         }
       }
     }
