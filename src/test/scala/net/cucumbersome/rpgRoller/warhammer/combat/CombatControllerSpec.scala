@@ -25,11 +25,9 @@ class CombatControllerSpec extends RouteSpec {
         val repository = new InMemoryActorRepository(List())
         val route = getRoute(gateway, repository, generator)
 
-        val requestBody = CreateCombatParameters(Array()).toJson.compactPrint
-        Post("/combat").withEntity(ContentTypes.`application/json`, requestBody) ~> route ~> check {
+        Post("/combat").withEntity(ContentTypes.`application/json`, "{}") ~> route ~> check {
           responseAs[String].parseJson mustBe CombatPresenter(expectedId, Array()).toJson
         }
-
       }
 
       "initialize it with actors" in {
