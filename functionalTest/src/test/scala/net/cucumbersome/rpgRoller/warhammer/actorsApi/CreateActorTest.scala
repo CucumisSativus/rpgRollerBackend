@@ -3,9 +3,8 @@ package net.cucumbersome.rpgRoller.warhammer.actorsApi
 import io.swagger.client.api.ActorsApi
 import net.cucumbersome.rpgRoller.warhammer.{ActorGenerator, FunctionalTest}
 
-class ActorsTest extends FunctionalTest{
+class CreateActorTest extends FunctionalTest{
   feature("Actors api"){
-    val actorsApi = new ActorsApi("http://localhost:8080")
     scenario("Adding new actor"){
       Given("Actor represented in json")
       val actor = ActorGenerator.generate
