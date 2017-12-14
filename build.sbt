@@ -11,6 +11,10 @@ resolvers += Resolver.sonatypeRepo("releases")
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
 enablePlugins(DockerPlugin, JavaAppPackaging)
+
+lazy val root = Project(id = "backend",
+  base = file("."))
+
 scalacOptions ++= Seq(
   "-feature",
   "-language:postfixOps",
