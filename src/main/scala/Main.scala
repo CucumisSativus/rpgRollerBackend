@@ -5,7 +5,9 @@ import akka.stream.ActorMaterializer
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
 import com.mongodb.event.{ClusterClosedEvent, ClusterDescriptionChangedEvent, ClusterListener, ClusterOpeningEvent}
 import com.typesafe.config.{Config, ConfigFactory}
-import net.cucumbersome.rpgRoller.warhammer.combat.{CombatController, CombatHandler}
+import net.cucumbersome.rpgRoller.warhammer.combat.CombatController
+import net.cucumbersome.rpgRoller.warhammer.combat.domain.{ActorBasedCombatService, CombatInitializer}
+import net.cucumbersome.rpgRoller.warhammer.combat.domain.CombatHandler.CombatInitialized
 import net.cucumbersome.rpgRoller.warhammer.infrastructure.CommandGateway
 import net.cucumbersome.rpgRoller.warhammer.infrastructure.mongo.CollectionBuilder
 import net.cucumbersome.rpgRoller.warhammer.infrastructure.repositories.{ActorRepository, MongoDbActorRepository}
@@ -33,10 +35,10 @@ object Main {
     val port = config.getInt("endpoint.port")
     val domain = config.getString("endpoint.domain")
 
-    val combatHandler = system.actorOf(CombatHandler.props("combatHandler"), "combatHandler")
+    val combatHandler = CombatInitializer.initializeCombatHandler
     val commandGateway = system.actorOf(CommandGateway.props(combatHandler), "commandGateway")
 
-    val combatController = new CombatController(commandGateway, repo)
+    val combatController = new CombatController(CombatInitializer.initializeCombatService(commandGateway, repo))
 
     logger.info("initialized combat controller")
     val swaggerService = new SwaggerDocService(domain, port)

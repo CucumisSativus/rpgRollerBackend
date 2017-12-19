@@ -1,4 +1,4 @@
-package net.cucumbersome.rpgRoller.warhammer.combat
+package net.cucumbersome.rpgRoller.warhammer.combat.domain
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator
 import net.cucumbersome.UnitSpec

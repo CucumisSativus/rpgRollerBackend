@@ -1,7 +1,7 @@
 package net.cucumbersome.rpgRoller.warhammer.infrastructure
 
 import akka.actor.{Actor, ActorRef, Props}
-import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler.CombatCommand
+import net.cucumbersome.rpgRoller.warhammer.combat.domain.CombatHandler.CombatCommand
 
 class CommandGateway(combatHandler: ActorRef) extends Actor {
   override def receive: Receive = {

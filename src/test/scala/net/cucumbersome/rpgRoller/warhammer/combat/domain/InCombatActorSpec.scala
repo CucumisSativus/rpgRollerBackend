@@ -1,10 +1,10 @@
-package net.cucumbersome.rpgRoller.warhammer.combat
+package net.cucumbersome.rpgRoller.warhammer.combat.domain
 
-import cats.syntax.option._
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator
 import net.cucumbersome.UnitSpec
-import net.cucumbersome.rpgRoller.warhammer.combat.InCombatActor.Name
+import net.cucumbersome.rpgRoller.warhammer.combat.domain.InCombatActor.Name
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
+import cats.syntax.option._
 
 class InCombatActorSpec extends UnitSpec with RandomDataGenerator {
 

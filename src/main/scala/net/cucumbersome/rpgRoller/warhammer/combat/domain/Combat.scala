@@ -1,12 +1,12 @@
-package net.cucumbersome.rpgRoller.warhammer.combat
+package net.cucumbersome.rpgRoller.warhammer.combat.domain
 
 import cats.data._
-import net.cucumbersome.rpgRoller.warhammer.combat.initiative.Initiative
+import net.cucumbersome.rpgRoller.warhammer.combat.domain.initiative.Initiative
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActor
 
-case class Combat(combatActors: List[InCombatActor])
+private[combat] case class Combat(combatActors: List[InCombatActor])
 
-object Combat{
+private[domain] object Combat{
   def addActor(players: List[InCombatActor]): State[Combat, Unit] = State[Combat, Unit] {
    case Combat(currentPlayers) => (Combat(currentPlayers ++ players), Unit)
   }

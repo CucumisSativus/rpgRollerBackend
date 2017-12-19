@@ -1,8 +1,8 @@
-package net.cucumbersome.rpgRoller.warhammer.combat.initiative
+package net.cucumbersome.rpgRoller.warhammer.combat.domain.initiative
 
 import cats.syntax.option._
-import net.cucumbersome.rpgRoller.warhammer.combat.InCombatActor
-import net.cucumbersome.rpgRoller.warhammer.combat.InCombatActor.{Initiative => ActorInitiative}
+import net.cucumbersome.rpgRoller.warhammer.combat.domain.InCombatActor.{Initiative => ActorInitiative}
+import net.cucumbersome.rpgRoller.warhammer.combat.domain.InCombatActor
 
 object Initiative {
   private lazy val getInitiative = (i: Option[ActorInitiative]) =>
