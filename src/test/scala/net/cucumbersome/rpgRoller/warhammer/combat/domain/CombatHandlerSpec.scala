@@ -1,4 +1,4 @@
-package net.cucumbersome.rpgRoller.warhammer.combat
+package net.cucumbersome.rpgRoller.warhammer.combat.domain
 
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -7,14 +7,14 @@ import akka.actor.{ActorRef, ActorSystem}
 import akka.testkit.{TestKit, TestProbe}
 import akka.util.Timeout
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator
-import net.cucumbersome.rpgRoller.warhammer.combat.CombatHandler._
+import net.cucumbersome.rpgRoller.warhammer.combat.domain.CombatHandler._
 import net.cucumbersome.test.DefaultTimeouts
 import org.scalatest.{MustMatchers, WordSpecLike}
 
 class CombatHandlerSpec extends TestKit(ActorSystem("CombatHandler"))
   with WordSpecLike with MustMatchers with DefaultTimeouts with RandomDataGenerator{
 
-  import net.cucumbersome.test.InCombatActorGenerator.arbitraryInCombatActor
+  import net.cucumbersome.rpgRoller.warhammer.combat.InCombatActorGenerator.arbitraryInCombatActor
 
   implicit val timeout: Timeout = Timeout(2, TimeUnit.SECONDS)
   "A combat handler" when {

@@ -1,13 +1,14 @@
-package net.cucumbersome.rpgRoller.warhammer.combat.initiative
+package net.cucumbersome.rpgRoller.warhammer.combat.domain.initiative
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator
 import net.cucumbersome.UnitSpec
-import net.cucumbersome.rpgRoller.warhammer.combat.InCombatActor
-import net.cucumbersome.rpgRoller.warhammer.combat.InCombatActor.modifyAgility
+import net.cucumbersome.rpgRoller.warhammer.combat.domain.InCombatActor.modifyAgility
+import net.cucumbersome.rpgRoller.warhammer.combat.domain.InCombatActor
 import net.cucumbersome.rpgRoller.warhammer.player.Statistics.Agility
 class InitiativeSpec extends UnitSpec with RandomDataGenerator{
 
-  import net.cucumbersome.test.InCombatActorGenerator.arbitraryInCombatActor
+  import net.cucumbersome.test.CombatActorGenerator.arbitraryCombatActor
+
   "An initiative handler" should {
     val (_firstPlayer, _middlePlayer, _lastPlayer) = build3Actors
     val firstPlayer = modifyAgility.modify(_ => new Agility(11))(_firstPlayer)

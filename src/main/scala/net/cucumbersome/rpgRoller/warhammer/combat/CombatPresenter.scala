@@ -2,6 +2,7 @@ package net.cucumbersome.rpgRoller.warhammer.combat
 
 import io.swagger.annotations.{ApiModel, ApiModelProperty}
 import monocle.Iso
+import net.cucumbersome.rpgRoller.warhammer.combat.domain.{Combat, InCombatActor}
 import net.cucumbersome.rpgRoller.warhammer.player.{CombatActor, CombatActorPresenter}
 
 case class CombatPresenter(id: String, actors: Array[InCombatActorPresenter])

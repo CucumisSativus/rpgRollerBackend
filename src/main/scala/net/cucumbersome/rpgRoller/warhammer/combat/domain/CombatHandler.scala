@@ -1,10 +1,10 @@
-package net.cucumbersome.rpgRoller.warhammer.combat
+package net.cucumbersome.rpgRoller.warhammer.combat.domain
 
 import akka.actor.{ActorLogging, ActorRef, Props}
 import akka.persistence.{PersistentActor, RecoveryCompleted}
 import cats.syntax.option._
 
-class CombatHandler(actorId: String) extends PersistentActor with ActorLogging {
+private[domain] class CombatHandler(actorId: String) extends PersistentActor with ActorLogging {
 
   import CombatHandler._
 
@@ -54,7 +54,7 @@ class CombatHandler(actorId: String) extends PersistentActor with ActorLogging {
 }
 
 object CombatHandler {
-  def props(actorId: String): Props = Props(new CombatHandler(actorId))
+  private[combat] def props(actorId: String): Props = Props(new CombatHandler(actorId))
 
   sealed trait CombatEvent
 
@@ -68,14 +68,14 @@ object CombatHandler {
     def id: String
   }
 
-  case class InitCombat(id: String, actors: List[InCombatActor]) extends CombatCommand
+  private[domain] case class InitCombat(id: String, actors: List[InCombatActor]) extends CombatCommand
 
-  case class AddActors(id: String, actors: List[InCombatActor]) extends CombatCommand
+  private[domain] case class AddActors(id: String, actors: List[InCombatActor]) extends CombatCommand
 
-  case class RemoveActors(id: String, actors: List[InCombatActor.Id]) extends CombatCommand
+  private[domain] case class RemoveActors(id: String, actors: List[InCombatActor.Id]) extends CombatCommand
 
-  case class GetCombat(id: String) extends CombatCommand
+  private[domain] case class GetCombat(id: String) extends CombatCommand
 
-  case class GetCombatResponse(id: String, combat: Combat)
+  private[domain] case class GetCombatResponse(id: String, combat: Combat)
 
 }

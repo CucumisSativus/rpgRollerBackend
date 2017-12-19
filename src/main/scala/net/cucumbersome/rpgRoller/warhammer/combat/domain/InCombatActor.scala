@@ -1,16 +1,16 @@
-package net.cucumbersome.rpgRoller.warhammer.combat
+package net.cucumbersome.rpgRoller.warhammer.combat.domain
 
 import java.util.UUID
 
 import monocle.Lens
 import monocle.macros.GenLens
-import net.cucumbersome.rpgRoller.warhammer.combat.InCombatActor._
+import net.cucumbersome.rpgRoller.warhammer.combat.domain.InCombatActor.{Id, Initiative, Name}
 import net.cucumbersome.rpgRoller.warhammer.player.CombatActor.Health
 import net.cucumbersome.rpgRoller.warhammer.player.{CombatActor, CombatActorOptics, Statistics}
 
-case class InCombatActor(id: Id, name: Name, currentHealth: Health, initiative: Option[Initiative], actor: CombatActor)
+private[combat] case class InCombatActor(id: Id, name: Name, currentHealth: Health, initiative: Option[Initiative], actor: CombatActor)
 
-object InCombatActor {
+private[combat] object InCombatActor {
 
   type IdGenerator = () => Id
   lazy val defaultIdGenerator: IdGenerator = () => Id(UUID.randomUUID().toString)
